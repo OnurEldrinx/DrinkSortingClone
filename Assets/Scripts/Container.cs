@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,14 +7,20 @@ public class Container : MonoBehaviour
     [SerializeField] private GridInstance grid;
     [SerializeField] private List<Transform> drinkSlots;
     [SerializeField] private List<Drink> drinks;
-    private BoxCollider _collider;
+    private BoxCollider boxCollider;
     private void Start()
     {
         if(grid is not null) drinkSlots.AddRange(grid.GetCells());
 
-        _collider = GetComponent<BoxCollider>();
+        boxCollider = GetComponent<BoxCollider>();
 
     }
+    
+    
+    
+    
+    
+    
 
     public void Fill(List<Drink> drinksList)
     {
@@ -35,6 +40,11 @@ public class Container : MonoBehaviour
         }
 
 
+    }
+
+    public void DisableCollider()
+    {
+        boxCollider.enabled = false;
     }
 
     

@@ -4,25 +4,106 @@ using UnityEngine;
 public class GridInstance : MonoBehaviour
 {
     [SerializeField] private List<Transform> cells;
+    public int rows;
+    public int columns;
+    private List<List<Transform>> gridMatrix;
+    public bool tableGrid;
+    
+    private void Start()
+    {
+        if (tableGrid)
+        {
+            CreateGridMatrix();
+            print(gridMatrix == null);
+        }
+        
+    }
 
+    private void CreateGridMatrix()
+    {
+        gridMatrix = new List<List<Transform>>();
+
+        print(cells.Count);
+
+        int indexHead = 0;
+        for (int i = 0; i < rows; i++)
+        {
+
+            List<Transform> tempRow = new List<Transform>();
+
+            for (int j = 0; j < columns; j++)
+            {
+                tempRow.Add(cells[indexHead]);
+                indexHead++;
+                //gridMatrix.SetValue(cells[indexHead],i,j);
+            }
+            
+            gridMatrix.Add(tempRow);
+
+        }
+        for (int i = 0; i < rows; i++)
+        {
+            for (int j = 0; j < columns; j++)
+            {
+                print(gridMatrix[i][j].gameObject.name);
+            }
+        }
+        
+    }
+
+    public void SetRowAndColumnCount(int r,int c)
+    {
+        rows = r;
+        columns = c;
+    }
+    
     public void InsertCell(Transform cell)
     {
         cells.Add(cell);
     }
+
+    public void InsertToGridMatrix(Transform cell,int r,int c)
+    {
+        gridMatrix[r][c] = cell;
+    }
+    
 
     public List<Transform> GetCells()
     {
         return cells;
     }
 
-    public List<Transform> GetNeighboursOf(Transform cell)
+    public Transform GetCell(int row,int col)
     {
-        List<Transform> neighbours = new List<Transform>();
-
-        //if(Physics.Raycast(cell.position,Vector3.forward,float.MaxValue))
-        // Ray to 4 directions;
-
-        return neighbours;
+        return gridMatrix[row][col];
     }
+
+    public List<Transform> GetNeighborsOf(Transform cell)
+    {
+        List<Transform> neighbors = new List<Transform>();
+        if (cell.TryGetComponent(out GridCell cellScript))
+        {
+            print("cell script got");
+            
+            // Check above neighbor
+            if (cellScript.row - 1 >= 0)
+                neighbors.Add(gridMatrix[cellScript.row - 1][cellScript.column]);
+            // Check below neighbor
+            if (cellScript.row + 1 < rows)
+                neighbors.Add(gridMatrix[cellScript.row + 1][cellScript.column]);
+            // Check left neighbor
+            if (cellScript.column - 1 >= 0)
+                neighbors.Add(gridMatrix[cellScript.row][cellScript.column - 1]);
+            // Check right neighbor
+            if (cellScript.column + 1 < columns)
+                neighbors.Add(gridMatrix[cellScript.row][cellScript.column + 1]);
+        }
+        
+        
+        return neighbors;
+
+    }
+    
+   
     
 }

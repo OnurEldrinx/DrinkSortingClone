@@ -1,43 +1,61 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class ContainerSlot : MonoBehaviour
 {
-    private Transform pivot;
 
     private Container currentContainer;
+    public GridInstance grid;
 
     private void Start()
     {
-        pivot = transform.GetChild(0);
+        grid = transform.parent.parent.GetComponent<GridInstance>();
     }
 
     public bool IsEmpty()
     {
-        return pivot.childCount <= 0;
+        return currentContainer is null;
     }
 
     public void AcceptOrReject(Container container)
     {
-        if (pivot.childCount <= 0)
+        Transform t = transform;
+        Transform containerTransform = container.transform;
+        if (currentContainer is null)
         {
-            container.transform.parent = pivot;
-            container.transform.localPosition = Vector3.zero;
-            container.GetComponent<BoxCollider>().enabled = false;
-
-            currentContainer = container;
             
+            Transform cell = transform.parent;
+
+            containerTransform.parent = null;
+            containerTransform.position = t.position;
+            containerTransform.rotation = t.rotation;
+            container.DisableCollider();
+            currentContainer = container;
+
+            
+            List<Transform> neighbors = grid.GetNeighborsOf(cell);
+
+            foreach (var n in neighbors)
+            {
+               n.gameObject.SetActive(false);
+            }
 
         }
         else
         {
-            container.transform.localPosition = Vector3.zero;
-
+            containerTransform.localPosition = Vector3.zero;
         }
+        
     }
+    
+    
+    
+    
+    
 
     public GridInstance GetGrid()
     {
-        return transform.parent.parent.GetComponent<GridInstance>();
+        return grid;
     }
 
 }
