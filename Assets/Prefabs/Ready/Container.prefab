@@ -57,6 +57,9 @@ MonoBehaviour:
   - {fileID: 1378255077}
   - {fileID: 1793676391}
   - {fileID: 1426571948}
+  rows: 0
+  columns: 0
+  tableGrid: 0
 --- !u!1 &603465406
 GameObject:
   m_ObjectHideFlags: 0
@@ -389,3 +392,6 @@ MonoBehaviour:
   grid: {fileID: 246153661}
   drinkSlots: []
   drinks: []
+  containerSlotMask:
+    serializedVersion: 2
+    m_Bits: 64

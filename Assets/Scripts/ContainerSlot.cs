@@ -49,20 +49,40 @@ public class ContainerSlot : MonoBehaviour
             {
                //n.gameObject.SetActive(false);
 
-               Container tempContainer = n.GetComponent<GridCell>().content.GetComponent<ContainerSlot>().currentContainer;
-
+               
                if (tempContainer is not null)
                {
                    List<List<Drink>> tempGroupList = tempContainer.CategorizeDrinks();
-                   //containerDrinkGroupMap.Add(tempContainer,tempGroupList);
+                   containerDrinkGroupMap.Add(tempContainer,tempGroupList);
 
                }
                
             }*/
             
-            //List<List<Drink>> thisGroupList = currentContainer.CategorizeDrinks();
+            /*List<List<Drink>> thisGroupList = currentContainer.CategorizeDrinks();
             
-            //containerDrinkGroupMap.Add(currentContainer,thisGroupList);
+            containerDrinkGroupMap.Add(currentContainer,thisGroupList);
+
+
+            foreach(Container c in containerDrinkGroupMap.Keys)
+            {
+
+                List<List<Drink>> tempGroup = containerDrinkGroupMap[c];
+
+
+                tempGroup.Sort(SortByAscendingListCount);
+
+                foreach(List<Drink> g in tempGroup)
+                {
+
+                    
+
+                }
+
+
+            }*/
+
+
 
             float jumpPower = 1;
             float duration = 0.25f;
@@ -70,8 +90,12 @@ public class ContainerSlot : MonoBehaviour
             float delayCounter = 0;
             float delay = 0.2f;
 
+
+
+
+
             // compare this with neighbors
-            foreach(Drink d in currentContainer.GetDrinks())
+            foreach (Drink d in currentContainer.GetDrinks())
             {
                 foreach (var n in neighbors)
                 {
@@ -80,163 +104,102 @@ public class ContainerSlot : MonoBehaviour
 
                     if (tempContainer is null) continue;
 
-                    if(currentContainer.GetTypeCount(d.GetDrinkType()) < tempContainer.GetTypeCount(d.GetDrinkType()))
+
+                    if((currentContainer.GetTypeCount(d.GetDrinkType()) < tempContainer.GetTypeCount(d.GetDrinkType())))
                     {
+                        print("case1");
 
                         //Debug.DrawLine(d.transform.position,tempContainer.transform.position,Color.red,100);
-                        if (tempContainer.AreThereAnyEmptySlot()) {
+                        if (tempContainer.AreThereAnyEmptySlot() && tempContainer.gameObject.activeInHierarchy) {
                         
-                            d.Animate(tempContainer,jumpPower, duration, ease,delayCounter);
+                            d.Animate(currentContainer,tempContainer,jumpPower, duration, ease,delayCounter);
+                            delayCounter += delay;
+                            //currentContainer.UpdateDrinksList();
+                        }
+                        else if(currentContainer.AreThereAnyEmptySlot() && currentContainer.gameObject.activeInHierarchy)
+                        {
+                            d.Animate(tempContainer, currentContainer, jumpPower, duration, ease, delayCounter);
                             delayCounter += delay;
                         }
 
                     }
-                    else if (currentContainer.GetTypeCount(d.GetDrinkType()) > tempContainer.GetTypeCount(d.GetDrinkType()))
+
+                    if ((currentContainer.GetTypeCount(d.GetDrinkType()) > tempContainer.GetTypeCount(d.GetDrinkType())))
                     {
+                        print("case2");
+
+                        if (tempContainer.GetTypeCount(d.GetDrinkType()) < 0) continue;
 
                         foreach (Drink neighborDrink in tempContainer.GetDrinks(d.GetDrinkType()))
                         {
-                            if (currentContainer.AreThereAnyEmptySlot())
+                            if (currentContainer.AreThereAnyEmptySlot() && currentContainer.gameObject.activeInHierarchy)
                             {
                                 
-                                neighborDrink.Animate(currentContainer, jumpPower, duration, ease,delayCounter);
+                                neighborDrink.Animate(tempContainer,currentContainer, jumpPower, duration, ease,delayCounter);
                                 delayCounter += delay;
+                                //currentContainer.UpdateDrinksList();
+
+                            }
+                            else if(tempContainer.AreThereAnyEmptySlot() && tempContainer.gameObject.activeInHierarchy)
+                            {
+                                neighborDrink.Animate(currentContainer, tempContainer, jumpPower, duration, ease, delayCounter);
+                                delayCounter += delay;
+                                //continue;
                             }
                         }
 
 
                     }
-                    else if(currentContainer.GetTypeCount(d.GetDrinkType()) == tempContainer.GetTypeCount(d.GetDrinkType()))
+
+                    if((currentContainer.GetTypeCount(d.GetDrinkType()) == tempContainer.GetTypeCount(d.GetDrinkType())))
                     {
+                        print("case3");
+
                         if (currentContainer.AreThereAnyEmptySlot())
                         {
                             foreach (Drink neighborDrink in tempContainer.GetDrinks(d.GetDrinkType()))
                             {
-                                if (currentContainer.AreThereAnyEmptySlot())
+                                if (currentContainer.AreThereAnyEmptySlot() && currentContainer.gameObject.activeInHierarchy)
                                 {
                                     
-                                    neighborDrink.Animate(currentContainer, jumpPower, duration, ease,delayCounter);
+                                    neighborDrink.Animate(tempContainer,currentContainer, jumpPower, duration, ease,delayCounter);
                                     delayCounter += delay;
+                                    //currentContainer.UpdateDrinksList();
 
 
                                 }
+                                else { continue; }
                             }
                         }
-                        else if (tempContainer.AreThereAnyEmptySlot())
+                        else if (tempContainer.AreThereAnyEmptySlot() && tempContainer.gameObject.activeInHierarchy)
                         {
 
                             
-                            d.Animate(tempContainer, jumpPower, duration, ease,delayCounter);
+                            d.Animate(currentContainer,tempContainer, jumpPower, duration, ease,delayCounter);
                             delayCounter += delay;
+                            //currentContainer.UpdateDrinksList();
 
                         }
                     }
 
                  
-                    
+                                //currentContainer.UpdateDrinksList();
+
 
                 }
 
 
             }
 
-            currentContainer.UpdateDrinksList();
 
-
-
-
-
-            /*delayCounter = 0;
+            delayCounter = 0;
 
             //compare neighbours to each other
-            foreach (Transform n in neighbors)
-            {
-                List<Transform> others = new List<Transform>(neighbors);
-                others.Add(cell);
-                others.Remove(n);
-
-                if (n.GetComponent<GridCell>().content.GetComponent<ContainerSlot>().currentContainer is null) continue;
-
-                foreach(Drink d in n.GetComponent<GridCell>().content.GetComponent<ContainerSlot>().currentContainer.GetDrinks())
-                {
-
-                    foreach (Transform o in others)
-                    {
-                        Container tempContainer = o.GetComponent<GridCell>().content.GetComponent<ContainerSlot>().currentContainer;
-
-                        if (tempContainer is null) continue;
-
-                        if (currentContainer.GetTypeCount(d.GetDrinkType()) < tempContainer.GetTypeCount(d.GetDrinkType()))
-                        {
-
-                            //Debug.DrawLine(d.transform.position,tempContainer.transform.position,Color.red,100);
-                            if (tempContainer.AreThereAnyEmptySlot())
-                            {
-                                
-                                d.Animate(tempContainer, jumpPower, duration, ease,delayCounter);
-                                delayCounter += delay;
-                                currentContainer.RemoveDrink(d);
-
-
-                            }
-
-                        }
-                        else if (currentContainer.GetTypeCount(d.GetDrinkType()) > tempContainer.GetTypeCount(d.GetDrinkType()))
-                        {
-
-                            foreach (Drink neighborDrink in tempContainer.GetDrinks(d.GetDrinkType()))
-                            {
-                                if (currentContainer.AreThereAnyEmptySlot())
-                                {
-                                    
-                                    neighborDrink.Animate(currentContainer, jumpPower, duration, ease,delayCounter);
-                                    delayCounter += delay;
-                                    tempContainer.RemoveDrink(neighborDrink);
-
-
-                                }
-                            }
-
-
-                        }
-                        else if (currentContainer.GetTypeCount(d.GetDrinkType()) == tempContainer.GetTypeCount(d.GetDrinkType()))
-                        {
-                            if (currentContainer.AreThereAnyEmptySlot())
-                            {
-                                foreach (Drink neighborDrink in tempContainer.GetDrinks(d.GetDrinkType()))
-                                {
-                                    if (currentContainer.AreThereAnyEmptySlot())
-                                    {
-                                        
-                                        neighborDrink.Animate(currentContainer, jumpPower, duration, ease,delayCounter);
-                                        delayCounter += delay;
-                                        tempContainer.RemoveDrink(neighborDrink);
-
-                                    }
-                                }
-                            }
-                            else if (tempContainer.AreThereAnyEmptySlot())
-                            {
-
-                                
-                                d.Animate(tempContainer, jumpPower, duration, ease,delayCounter);
-                                delayCounter += delay;
-                                currentContainer.RemoveDrink(d);
-
-                            }
-                        }
+            
 
 
 
 
-                    }
-
-                }
-
-
-                
-
-            }*/
 
 
 
@@ -248,11 +211,20 @@ public class ContainerSlot : MonoBehaviour
         
     }
 
+    public int SortByAscendingListCount(List<Drink> x, List<Drink> y)
+    {
+        return x.Count.CompareTo(y.Count);
+    }
+
     public Container GetCurrentContainer()
     {
         return currentContainer;
     }
-    
+
+    public void SetCurrentContainer(Container container)
+    {
+        currentContainer = null;
+    }
     
     
 

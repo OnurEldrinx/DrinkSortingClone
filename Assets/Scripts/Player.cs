@@ -68,6 +68,7 @@ public class Player : MonoBehaviour
             else
             {
                 draggingTarget.localPosition = Vector3.zero;
+                print("filled");
             }
 
 

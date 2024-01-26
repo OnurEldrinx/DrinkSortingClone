@@ -16,7 +16,7 @@ public class Drink : MonoBehaviour
         return type;
     }
 
-    public void Animate(Container target,float jumpPower,float duration,Ease ease,float delay)
+    public void Animate(Container source,Container target,float jumpPower,float duration,Ease ease,float delay)
     {
 
         Transform slot = target.GetEmptySlot();
@@ -26,7 +26,7 @@ public class Drink : MonoBehaviour
             transform.parent = slot;
             transform.localPosition = Vector3.zero;
             target.UpdateDrinksList();
-
+            source.UpdateDrinksList();
         });
 
     }

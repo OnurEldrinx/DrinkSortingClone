@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using DG.Tweening;
 
 public class Container : MonoBehaviour
 {
@@ -12,6 +13,8 @@ public class Container : MonoBehaviour
     private HashSet<DrinkType> existingTypes;
     private Dictionary<DrinkType, int> typeCountMap;
     private List<Transform> emptySlots;
+
+    public LayerMask containerSlotMask;
 
     private void Start()
     {
@@ -85,6 +88,12 @@ public class Container : MonoBehaviour
         drinks = new List<Drink>();
         existingTypes.Clear();
         typeCountMap.Clear();
+        emptySlots.Clear();
+
+        foreach (var t in drinkSlots.Where(t => t.childCount == 0))
+        {
+            emptySlots.Add(t);
+        }
 
         foreach (var t in drinkSlots.Where(t => t.childCount > 0))
         {
@@ -93,7 +102,30 @@ public class Container : MonoBehaviour
             existingTypes.Add(temp.GetDrinkType());
         }
 
+
+        if(drinks.Count == 0) {
+
+
+            if (Physics.Raycast(transform.position + Vector3.up,Vector3.down,out RaycastHit hit,float.MaxValue,containerSlotMask))
+            {
+                hit.transform.GetComponent<ContainerSlot>().SetCurrentContainer(null);
+            }
+
+
+            transform.parent = null;
+            transform.DOScale(Vector3.zero,0.25f).OnComplete(()=>
+            {
+
+                gameObject.SetActive(false);
+            });
+
+        }
+
         CategorizeDrinks();
+
+        
+
+
 
     }
 
