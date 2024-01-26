@@ -1,4 +1,5 @@
 using UnityEngine;
+using DG.Tweening;
 
 public class Player : MonoBehaviour
 {
@@ -15,6 +16,8 @@ public class Player : MonoBehaviour
     [SerializeField] private LayerMask slotLayer; //container slot
 
     private Vector3 draggingOffset;
+
+    private Tweener movementTween;
 
     // Start is called before the first frame update
     void Start()
@@ -51,6 +54,7 @@ public class Player : MonoBehaviour
         else if (Input.GetMouseButtonUp(0) && dragging)
         {
             dragging = false;
+            DOTween.Clear();
             //print("dragging end");
 
             if (Physics.Raycast(origin, out hit, float.MaxValue, slotLayer))
@@ -83,7 +87,11 @@ public class Player : MonoBehaviour
             mousePos.z = mainCamera.WorldToScreenPoint(draggingTarget.transform.position).z;
             Vector3 draggingVector = mainCamera.ScreenToWorldPoint(mousePos);
             Vector3 movementVector = draggingVector + draggingOffset;
-            draggingTarget.transform.position = movementVector;
+            //draggingTarget.transform.position = movementVector;
+
+            
+            movementTween = draggingTarget.DOMove(movementVector,0.05f).SetEase(Ease.InSine);
+
             
         }
 

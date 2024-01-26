@@ -1,6 +1,8 @@
+
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using DG.Tweening;
 
 public class ContainerSlot : MonoBehaviour
 {
@@ -33,46 +35,210 @@ public class ContainerSlot : MonoBehaviour
             container.DisableCollider();
             currentContainer = container;
 
+            SpawnManager.Instance.filledSlotCount--;
+            if(SpawnManager.Instance.filledSlotCount == 0)
+            {
+                SpawnManager.Instance.SpawnContainers();
+            }
             
             List<Transform> neighbors = grid.GetNeighborsOf(cell);
 
-            Dictionary<Container, List<List<Drink>>> containerDrinkGroupMap = new Dictionary<Container, List<List<Drink>>>();
+            //Dictionary<Container, List<List<Drink>>> containerDrinkGroupMap = new Dictionary<Container, List<List<Drink>>>();
 
-            foreach (var n in neighbors)
+            /*foreach (var n in neighbors)
             {
-               n.gameObject.SetActive(false);
+               //n.gameObject.SetActive(false);
 
                Container tempContainer = n.GetComponent<GridCell>().content.GetComponent<ContainerSlot>().currentContainer;
 
                if (tempContainer is not null)
                {
                    List<List<Drink>> tempGroupList = tempContainer.CategorizeDrinks();
-                   containerDrinkGroupMap.Add(tempContainer,tempGroupList);
+                   //containerDrinkGroupMap.Add(tempContainer,tempGroupList);
 
                }
                
-            }
-            
-            List<List<Drink>> thisGroupList = currentContainer.CategorizeDrinks();
-            
-            containerDrinkGroupMap.Add(currentContainer,thisGroupList);
-
-            
-            
-            /*for (int i = 0; i < containerDrinkGroupMap.Keys.Count; i++)
-            {
-                Container c = containerDrinkGroupMap.Keys.ElementAt(i);
-                List<Drink> l = containerDrinkGroupMap[c];
-
-                var containers = containerDrinkGroupMap.Where(query => query.Value.Count > l.Count && query.Value[0].GetDrinkType() == l[0].GetDrinkType());
-
-                foreach (var containerCurrent in containers)
-                {
-                    print(containerCurrent.Key.transform.parent.parent.name);
-                }
-                
             }*/
             
+            //List<List<Drink>> thisGroupList = currentContainer.CategorizeDrinks();
+            
+            //containerDrinkGroupMap.Add(currentContainer,thisGroupList);
+
+            float jumpPower = 1;
+            float duration = 0.25f;
+            Ease ease = Ease.Linear;
+            float delayCounter = 0;
+            float delay = 0.2f;
+
+            // compare this with neighbors
+            foreach(Drink d in currentContainer.GetDrinks())
+            {
+                foreach (var n in neighbors)
+                {
+
+                    Container tempContainer = n.GetComponent<GridCell>().content.GetComponent<ContainerSlot>().currentContainer;
+
+                    if (tempContainer is null) continue;
+
+                    if(currentContainer.GetTypeCount(d.GetDrinkType()) < tempContainer.GetTypeCount(d.GetDrinkType()))
+                    {
+
+                        //Debug.DrawLine(d.transform.position,tempContainer.transform.position,Color.red,100);
+                        if (tempContainer.AreThereAnyEmptySlot()) {
+                        
+                            d.Animate(tempContainer,jumpPower, duration, ease,delayCounter);
+                            delayCounter += delay;
+                        }
+
+                    }
+                    else if (currentContainer.GetTypeCount(d.GetDrinkType()) > tempContainer.GetTypeCount(d.GetDrinkType()))
+                    {
+
+                        foreach (Drink neighborDrink in tempContainer.GetDrinks(d.GetDrinkType()))
+                        {
+                            if (currentContainer.AreThereAnyEmptySlot())
+                            {
+                                
+                                neighborDrink.Animate(currentContainer, jumpPower, duration, ease,delayCounter);
+                                delayCounter += delay;
+                            }
+                        }
+
+
+                    }
+                    else if(currentContainer.GetTypeCount(d.GetDrinkType()) == tempContainer.GetTypeCount(d.GetDrinkType()))
+                    {
+                        if (currentContainer.AreThereAnyEmptySlot())
+                        {
+                            foreach (Drink neighborDrink in tempContainer.GetDrinks(d.GetDrinkType()))
+                            {
+                                if (currentContainer.AreThereAnyEmptySlot())
+                                {
+                                    
+                                    neighborDrink.Animate(currentContainer, jumpPower, duration, ease,delayCounter);
+                                    delayCounter += delay;
+
+
+                                }
+                            }
+                        }
+                        else if (tempContainer.AreThereAnyEmptySlot())
+                        {
+
+                            
+                            d.Animate(tempContainer, jumpPower, duration, ease,delayCounter);
+                            delayCounter += delay;
+
+                        }
+                    }
+
+                 
+                    
+
+                }
+
+
+            }
+
+            currentContainer.UpdateDrinksList();
+
+
+
+
+
+            /*delayCounter = 0;
+
+            //compare neighbours to each other
+            foreach (Transform n in neighbors)
+            {
+                List<Transform> others = new List<Transform>(neighbors);
+                others.Add(cell);
+                others.Remove(n);
+
+                if (n.GetComponent<GridCell>().content.GetComponent<ContainerSlot>().currentContainer is null) continue;
+
+                foreach(Drink d in n.GetComponent<GridCell>().content.GetComponent<ContainerSlot>().currentContainer.GetDrinks())
+                {
+
+                    foreach (Transform o in others)
+                    {
+                        Container tempContainer = o.GetComponent<GridCell>().content.GetComponent<ContainerSlot>().currentContainer;
+
+                        if (tempContainer is null) continue;
+
+                        if (currentContainer.GetTypeCount(d.GetDrinkType()) < tempContainer.GetTypeCount(d.GetDrinkType()))
+                        {
+
+                            //Debug.DrawLine(d.transform.position,tempContainer.transform.position,Color.red,100);
+                            if (tempContainer.AreThereAnyEmptySlot())
+                            {
+                                
+                                d.Animate(tempContainer, jumpPower, duration, ease,delayCounter);
+                                delayCounter += delay;
+                                currentContainer.RemoveDrink(d);
+
+
+                            }
+
+                        }
+                        else if (currentContainer.GetTypeCount(d.GetDrinkType()) > tempContainer.GetTypeCount(d.GetDrinkType()))
+                        {
+
+                            foreach (Drink neighborDrink in tempContainer.GetDrinks(d.GetDrinkType()))
+                            {
+                                if (currentContainer.AreThereAnyEmptySlot())
+                                {
+                                    
+                                    neighborDrink.Animate(currentContainer, jumpPower, duration, ease,delayCounter);
+                                    delayCounter += delay;
+                                    tempContainer.RemoveDrink(neighborDrink);
+
+
+                                }
+                            }
+
+
+                        }
+                        else if (currentContainer.GetTypeCount(d.GetDrinkType()) == tempContainer.GetTypeCount(d.GetDrinkType()))
+                        {
+                            if (currentContainer.AreThereAnyEmptySlot())
+                            {
+                                foreach (Drink neighborDrink in tempContainer.GetDrinks(d.GetDrinkType()))
+                                {
+                                    if (currentContainer.AreThereAnyEmptySlot())
+                                    {
+                                        
+                                        neighborDrink.Animate(currentContainer, jumpPower, duration, ease,delayCounter);
+                                        delayCounter += delay;
+                                        tempContainer.RemoveDrink(neighborDrink);
+
+                                    }
+                                }
+                            }
+                            else if (tempContainer.AreThereAnyEmptySlot())
+                            {
+
+                                
+                                d.Animate(tempContainer, jumpPower, duration, ease,delayCounter);
+                                delayCounter += delay;
+                                currentContainer.RemoveDrink(d);
+
+                            }
+                        }
+
+
+
+
+                    }
+
+                }
+
+
+                
+
+            }*/
+
+
 
         }
         else

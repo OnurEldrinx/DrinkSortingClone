@@ -11,21 +11,39 @@ public class Container : MonoBehaviour
     private BoxCollider boxCollider;
     private HashSet<DrinkType> existingTypes;
     private Dictionary<DrinkType, int> typeCountMap;
+    private List<Transform> emptySlots;
 
     private void Start()
     {
-        if(grid is not null) drinkSlots.AddRange(grid.GetCells());
+        if(grid is not null && drinkSlots.Count == 0) drinkSlots.AddRange(grid.GetCells());
+        emptySlots = new List<Transform>();
 
         boxCollider = GetComponent<BoxCollider>();
 
         existingTypes = new HashSet<DrinkType>();
-        
-        foreach (var t in drinkSlots.Where(t => t.childCount > 0))
+
+     
+
+        if(drinks.Count == 0)
         {
-            Drink temp = t.GetChild(0).GetComponent<Drink>();
-            drinks.Add(temp);
-            existingTypes.Add(temp.GetDrinkType());
+
+            foreach (var t in drinkSlots.Where(t => t.childCount > 0))
+            {
+                Drink temp = t.GetChild(0).GetComponent<Drink>();
+                drinks.Add(temp);
+                existingTypes.Add(temp.GetDrinkType());
+            }
+
+            
         }
+
+        foreach (var t in drinkSlots.Where(t => t.childCount == 0))
+        {
+            emptySlots.Add(t);
+        }
+
+        CategorizeDrinks();
+        
 
     }
 
@@ -60,17 +78,87 @@ public class Container : MonoBehaviour
         return drinkGroups;
 
     }
+
+    public void UpdateDrinksList()
+    {
+
+        drinks = new List<Drink>();
+        existingTypes.Clear();
+        typeCountMap.Clear();
+
+        foreach (var t in drinkSlots.Where(t => t.childCount > 0))
+        {
+            Drink temp = t.GetChild(0).GetComponent<Drink>();
+            drinks.Add(temp);
+            existingTypes.Add(temp.GetDrinkType());
+        }
+
+        CategorizeDrinks();
+
+    }
+
     
     
     private int SortByAscendingListCount(List<Drink> x, List<Drink> y)
     {
         return x.Count.CompareTo(y.Count);
     }
-    
+
+    public int GetTypeCount(DrinkType type)
+    {
+        if (!typeCountMap.ContainsKey(type)) return 0;
+        return typeCountMap[type];
+    }
+
+    public List<Drink> GetDrinks()
+    {
+        return drinks;
+    }
+
+    public List<Drink> GetDrinks(DrinkType type)
+    {
+
+        List<Drink> result = new List<Drink>();
+
+        foreach (Drink d in drinks)
+        {
+            if(d.GetDrinkType() == type)
+            {
+                result.Add(d);
+            }
+        }
+
+        return result;
+
+    }
+
+    public void InsertDrink(Drink drink)
+    {
+        drinks.Add(drink);
+        existingTypes.Add(drink.GetDrinkType());
+        
+        CategorizeDrinks();
+    }
+
+    public void RemoveDrink(Drink drink)
+    {
+        drinks.Remove(drink);
+
+        existingTypes.Clear();
+        foreach (Drink d in drinks)
+        {
+            existingTypes.Add(d.GetDrinkType());
+        }
+
+        CategorizeDrinks();
+    }
 
     public void Fill(List<Drink> drinksList)
     {
-        drinkSlots.AddRange(grid.GetCells());
+        if(drinkSlots.Count == 0)
+        {
+            drinkSlots.AddRange(grid.GetCells());
+        }
 
 
         List<Transform> availableSlots = new List<Transform>(drinkSlots);
@@ -81,6 +169,7 @@ public class Container : MonoBehaviour
             int randomSlot = Random.Range(0, availableSlots.Count);
             d.transform.parent = availableSlots[randomSlot];
             d.transform.localPosition = Vector3.zero;
+            d.transform.localRotation = Quaternion.Euler(Vector3.zero);
             availableSlots.RemoveAt(randomSlot);
             drinks.Add(d);
         }
@@ -93,6 +182,17 @@ public class Container : MonoBehaviour
         boxCollider.enabled = false;
     }
 
+    public Transform GetEmptySlot()
+    {
+        Transform s = emptySlots[0];
+        emptySlots.Remove(s);
+        return s;
+    }
+
+    public bool AreThereAnyEmptySlot()
+    {
+        return emptySlots.Count > 0;
+    }
     
 
 }

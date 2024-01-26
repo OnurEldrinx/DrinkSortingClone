@@ -130,7 +130,7 @@ Material:
     - _Glossiness: 0
     - _GlossyReflections: 0
     - _METALNESS: 0
-    - _Metallic: 1
+    - _Metallic: 0.5
     - _OcclusionStrength: 1
     - _Parallax: 0.005
     - _QueueControl: 0
@@ -139,7 +139,7 @@ Material:
     - _REFLECTIONS_ROUGHNESS: 1
     - _REFLECTIONS_WEIGHT: 8.88
     - _ReceiveShadows: 1
-    - _Smoothness: 0.75
+    - _Smoothness: 0.5
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1

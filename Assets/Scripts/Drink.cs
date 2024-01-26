@@ -1,6 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 public class Drink : MonoBehaviour
 {
@@ -16,4 +15,20 @@ public class Drink : MonoBehaviour
     {
         return type;
     }
+
+    public void Animate(Container target,float jumpPower,float duration,Ease ease,float delay)
+    {
+
+        Transform slot = target.GetEmptySlot();
+
+        transform.DOJump(slot.position,jumpPower,1,duration).SetDelay(delay).SetEase(ease).OnComplete(()=>{
+
+            transform.parent = slot;
+            transform.localPosition = Vector3.zero;
+            target.UpdateDrinksList();
+
+        });
+
+    }
+
 }
