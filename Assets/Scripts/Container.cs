@@ -12,7 +12,7 @@ public class Container : MonoBehaviour
     private BoxCollider boxCollider;
     private HashSet<DrinkType> existingTypes;
     private Dictionary<DrinkType, int> typeCountMap;
-    private List<Transform> emptySlots;
+    [SerializeField] private List<Transform> emptySlots;
 
     public LayerMask containerSlotMask;
 
@@ -23,12 +23,12 @@ public class Container : MonoBehaviour
 
         boxCollider = GetComponent<BoxCollider>();
 
-        existingTypes = new HashSet<DrinkType>();
 
      
 
         if(drinks.Count == 0)
         {
+            existingTypes = new HashSet<DrinkType>();
 
             foreach (var t in drinkSlots.Where(t => t.childCount > 0))
             {
@@ -39,6 +39,8 @@ public class Container : MonoBehaviour
 
             
         }
+        
+        
 
         foreach (var t in drinkSlots.Where(t => t.childCount == 0))
         {
@@ -56,6 +58,8 @@ public class Container : MonoBehaviour
 
         List<List<Drink>> drinkGroups = new List<List<Drink>>();
 
+        print(existingTypes.Count);
+        
         for (int i = 0; i < existingTypes.Count; i++)
         {
             List<Drink> temp = new List<Drink>();
@@ -84,7 +88,6 @@ public class Container : MonoBehaviour
 
     public void UpdateDrinksList()
     {
-
         drinks = new List<Drink>();
         existingTypes.Clear();
         typeCountMap.Clear();
@@ -101,8 +104,9 @@ public class Container : MonoBehaviour
             drinks.Add(temp);
             existingTypes.Add(temp.GetDrinkType());
         }
+        
 
-
+        // Empty
         if(drinks.Count == 0) {
 
 
@@ -115,18 +119,49 @@ public class Container : MonoBehaviour
             transform.parent = null;
             transform.DOScale(Vector3.zero,0.25f).OnComplete(()=>
             {
-
-                gameObject.SetActive(false);
+                Invoke(nameof(DisableGameObject),0.05f);
             });
+            
+            return;
+            
+        }
+        
+        // All Same
+        bool allSame = true;
+        DrinkType sample = drinks[0].GetDrinkType();
+        foreach (var d in drinks)
+        {
+            if (d.GetDrinkType() != sample)
+            {
+                allSame = false;
+                break;
+            }
+        }
 
+        if (allSame && drinks.Count == 6)
+        {
+            if (Physics.Raycast(transform.position + Vector3.up,Vector3.down,out RaycastHit hit,float.MaxValue,containerSlotMask))
+            {
+                hit.transform.GetComponent<ContainerSlot>().SetCurrentContainer(null);
+            }
+
+
+            transform.parent = null;
+            transform.DOScale(Vector3.zero,0.25f).OnComplete(()=>
+            {
+                Invoke(nameof(DisableGameObject),0.05f);
+            });
+            
+            return;
         }
 
         CategorizeDrinks();
-
         
+    }
 
-
-
+    private void DisableGameObject()
+    {
+        gameObject.SetActive(false);
     }
 
     
@@ -194,7 +229,7 @@ public class Container : MonoBehaviour
 
 
         List<Transform> availableSlots = new List<Transform>(drinkSlots);
-
+        existingTypes = new HashSet<DrinkType>();
 
         foreach(Drink d in drinksList)
         {
@@ -204,6 +239,7 @@ public class Container : MonoBehaviour
             d.transform.localRotation = Quaternion.Euler(Vector3.zero);
             availableSlots.RemoveAt(randomSlot);
             drinks.Add(d);
+            existingTypes.Add(d.GetDrinkType());
         }
 
 
@@ -225,6 +261,10 @@ public class Container : MonoBehaviour
     {
         return emptySlots.Count > 0;
     }
-    
+
+    public int EmptySlotCount()
+    {
+        return emptySlots.Count;
+    }
 
 }
