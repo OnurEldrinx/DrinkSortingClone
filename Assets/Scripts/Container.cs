@@ -58,7 +58,6 @@ public class Container : MonoBehaviour
 
         List<List<Drink>> drinkGroups = new List<List<Drink>>();
 
-        print(existingTypes.Count);
         
         for (int i = 0; i < existingTypes.Count; i++)
         {
@@ -79,7 +78,6 @@ public class Container : MonoBehaviour
         foreach (var group in drinkGroups)
         {
             typeCountMap.Add(group[0].GetDrinkType(),group.Count);
-            print(group[0].GetDrinkType()+"-"+group.Count);
         }
 
         return drinkGroups;
@@ -119,7 +117,7 @@ public class Container : MonoBehaviour
             transform.parent = null;
             transform.DOScale(Vector3.zero,0.25f).OnComplete(()=>
             {
-                Invoke(nameof(DisableGameObject),0.05f);
+                Invoke(nameof(DisableGameObject),0.1f);
             });
             
             return;
@@ -138,7 +136,7 @@ public class Container : MonoBehaviour
             }
         }
 
-        if (allSame && drinks.Count == 6)
+        if (allSame && (drinks.Count == 6) && (emptySlots.Count == 0))
         {
             if (Physics.Raycast(transform.position + Vector3.up,Vector3.down,out RaycastHit hit,float.MaxValue,containerSlotMask))
             {
@@ -149,7 +147,7 @@ public class Container : MonoBehaviour
             transform.parent = null;
             transform.DOScale(Vector3.zero,0.25f).OnComplete(()=>
             {
-                Invoke(nameof(DisableGameObject),0.05f);
+                Invoke(nameof(DisableGameObject),0.1f);
             });
             
             return;
@@ -159,9 +157,13 @@ public class Container : MonoBehaviour
         
     }
 
+    
+
     private void DisableGameObject()
     {
         gameObject.SetActive(false);
+        //DOTween.Clear();
+        //Destroy(gameObject);
     }
 
     
@@ -173,8 +175,24 @@ public class Container : MonoBehaviour
 
     public int GetTypeCount(DrinkType type)
     {
-        if (!typeCountMap.ContainsKey(type)) return 0;
-        return typeCountMap[type];
+        //if (!typeCountMap.ContainsKey(type)) return 0;
+        //return typeCountMap[type];
+        return GetDrinks(type).Count;
+    }
+
+    public DrinkType MostExistingType()
+    {
+        DrinkType result = drinks[0].GetDrinkType();
+
+
+        var n = CategorizeDrinks();
+
+        n.Sort(SortByAscendingListCount);
+
+
+        result = n.Last()[0].GetDrinkType();
+
+        return result;
     }
 
     public List<Drink> GetDrinks()

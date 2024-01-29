@@ -39,9 +39,6 @@ public class Player : MonoBehaviour
                 dragging = true;
                 draggingTarget = hit.collider.transform;
                
-                //source = draggingTarget.parent;
-                //print("dragging start");
-
                 Vector3 mousePos = Input.mousePosition;
                 mousePos.z = mainCamera.WorldToScreenPoint(draggingTarget.transform.position).z;
                 Vector3 draggingVector = mainCamera.ScreenToWorldPoint(mousePos);
@@ -55,7 +52,6 @@ public class Player : MonoBehaviour
         {
             dragging = false;
             DOTween.Clear();
-            //print("dragging end");
 
             if (Physics.Raycast(origin, out hit, float.MaxValue, slotLayer))
             {
@@ -68,7 +64,6 @@ public class Player : MonoBehaviour
             else
             {
                 draggingTarget.localPosition = Vector3.zero;
-                print("filled");
             }
 
 

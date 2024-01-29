@@ -14,7 +14,6 @@ public class GridInstance : MonoBehaviour
         if (tableGrid)
         {
             CreateGridMatrix();
-            print(gridMatrix == null);
         }
         
     }
@@ -23,7 +22,6 @@ public class GridInstance : MonoBehaviour
     {
         gridMatrix = new List<List<Transform>>();
 
-        print(cells.Count);
 
         int indexHead = 0;
         for (int i = 0; i < rows; i++)
@@ -41,13 +39,7 @@ public class GridInstance : MonoBehaviour
             gridMatrix.Add(tempRow);
 
         }
-        for (int i = 0; i < rows; i++)
-        {
-            for (int j = 0; j < columns; j++)
-            {
-                print(gridMatrix[i][j].gameObject.name);
-            }
-        }
+        
         
     }
 
@@ -82,9 +74,7 @@ public class GridInstance : MonoBehaviour
     {
         List<Transform> neighbors = new List<Transform>();
         if (cell.TryGetComponent(out GridCell cellScript))
-        {
-            print("cell script got");
-            
+        {            
             // Check above neighbor
             if (cellScript.row - 1 >= 0)
                 neighbors.Add(gridMatrix[cellScript.row - 1][cellScript.column]);
