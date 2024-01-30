@@ -58,7 +58,6 @@ public class Container : MonoBehaviour
 
         List<List<Drink>> drinkGroups = new List<List<Drink>>();
 
-        
         for (int i = 0; i < existingTypes.Count; i++)
         {
             List<Drink> temp = new List<Drink>();
@@ -69,6 +68,7 @@ public class Container : MonoBehaviour
                     temp.Add(drinks[j]);
                 }
             }
+            if(temp.Count == 0) { continue; }
             drinkGroups.Add(temp);
         }
 
@@ -77,6 +77,8 @@ public class Container : MonoBehaviour
 
         foreach (var group in drinkGroups)
         {
+            print(group.Count);
+            if(group.Count == 0) { continue; }
             typeCountMap.Add(group[0].GetDrinkType(),group.Count);
         }
 
@@ -115,11 +117,12 @@ public class Container : MonoBehaviour
 
 
             transform.parent = null;
-            transform.DOScale(Vector3.zero,0.25f).OnComplete(()=>
+            Invoke(nameof(DisableGameObject), 0.25f);
+            /*transform.DOScale(Vector3.zero,0.25f).OnComplete(()=>
             {
                 Invoke(nameof(DisableGameObject),0.1f);
-            });
-            
+            });*/
+
             return;
             
         }
@@ -145,11 +148,12 @@ public class Container : MonoBehaviour
 
 
             transform.parent = null;
-            transform.DOScale(Vector3.zero,0.25f).OnComplete(()=>
+            Invoke(nameof(DisableGameObject), 0.25f);
+            /*transform.DOScale(Vector3.zero,0.25f).OnComplete(()=>
             {
                 Invoke(nameof(DisableGameObject),0.1f);
-            });
-            
+            });*/
+
             return;
         }
 
@@ -161,8 +165,12 @@ public class Container : MonoBehaviour
 
     private void DisableGameObject()
     {
-        gameObject.SetActive(false);
-        //DOTween.Clear();
+
+        transform.DOScale(Vector3.zero, 0.25f).OnComplete(() =>
+        {
+            gameObject.SetActive(false);
+        });
+        //DOTween.CompleteAll();
         //Destroy(gameObject);
     }
 

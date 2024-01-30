@@ -109,12 +109,13 @@ public class ContainerSlot : MonoBehaviour
 
 
             List<Container> allContainers = new List<Container>(drinkContainerMap.Values);
+            List<Drink> allDrinks = new List<Drink>(drinkContainerMap.Keys);
 
 
                 // Most Stable
                 delayCounter = 0;
                 // each drink looks for the most
-                foreach (var drink in drinkContainerMap.Keys)
+                foreach (var drink in allDrinks)
                 {
 
                     Container source = drinkContainerMap[drink];
@@ -148,16 +149,18 @@ public class ContainerSlot : MonoBehaviour
                     {
                         drink.Animate(source, target, jumpPower, duration, ease, delayCounter);
                         delayCounter += delay;
+                        drinkContainerMap[drink] = target;
                         continue;
                     }
-                    /*else if (target != source && !target.AreThereAnyEmptySlot() && source.AreThereAnyEmptySlot() && ((source.GetDrinks(type).Count + target.GetDrinks(type).Count) >= 6))
+                    /*else if (target != source && !target.AreThereAnyEmptySlot() && source.AreThereAnyEmptySlot() && drink.GetDrinkType() == type)
                     {
 
                         List<Drink> targetDrinks = target.GetDrinks(type);
+                        print(targetDrinks.Count + " - " + type);
                         foreach (var d in targetDrinks)
                         {
 
-                            if (source.AreThereAnyEmptySlot() && !d.moved)
+                            if (source.AreThereAnyEmptySlot() && d.GetMovementCounter() == 0)
                             {
                                 d.Animate(target, source, jumpPower, duration, ease, delayCounter);
                                 delayCounter += delay;
@@ -167,10 +170,19 @@ public class ContainerSlot : MonoBehaviour
 
                     }*/
 
+
                 }
+
+
+
+            allContainers = new List<Container>(drinkContainerMap.Values);
+            allDrinks = new List<Drink>(drinkContainerMap.Keys);
+
+            if (allContainers.Contains(currentContainer)) { allContainers.Remove(currentContainer); }
+
+
             
 
-           
 
         }
         else
