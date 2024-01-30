@@ -1,15 +1,12 @@
 using UnityEngine;
 using DG.Tweening;
-using System.Collections.Generic;
 
 public class Drink : MonoBehaviour
 {
 
     [SerializeField] private DrinkType type;
 
-    private int movementCounter = 0;
-
-    public bool moved;
+    public bool animating;
     
     public void SetType(DrinkType type)
     {
@@ -23,64 +20,37 @@ public class Drink : MonoBehaviour
 
     public void Animate(Container source,Container target,float jumpPower,float duration,Ease ease,float delay)
     {
+        if (animating) return;
 
-        if (!target.gameObject.activeSelf && !source.gameObject.activeSelf) {
-            DOTween.Clear();
+        if (!target.gameObject.activeInHierarchy || !source.gameObject.activeInHierarchy) {
             return;
         }
 
-        moved = true;
+        animating = true;
 
-        movementCounter++;
+        source.animationPlaying = true;
+        target.animationPlaying = true;
+
         Transform slot = target.GetEmptySlot();
 
         transform.DOJump(slot.position,jumpPower,1,duration).SetDelay(delay).SetEase(ease).OnComplete(()=>{
 
             transform.parent = slot;
             transform.localPosition = Vector3.zero;
+            transform.localScale = new Vector3(4,1,4);
             source.UpdateDrinksList();
             target.UpdateDrinksList();
-            movementCounter = 0;
-            moved = false;
+            source.animationPlaying = false;
+            target.animationPlaying = false;
+            animating = false;
+
         });
 
     }
 
 
-    private void ResetMovementCounter()
-    {
-        movementCounter = 0;
-    }
+   
 
-    public int GetMovementCounter()
-    {
-        return movementCounter;
-    }
-
-    public Container FindTargetContainerFor(Container source,List<Container> containers)
-    {
-
-        Container result = source;
-
-        DrinkType t = GetDrinkType();
-
-        foreach (Container c in containers)
-        {
-
-            if((c.GetTypeCount(t) >= result.GetTypeCount(t)) && result.GetTypeCount(t) != 0)
-            {
-
-               result = c;
-               
-            }
-
-          
-
-        }
-
-
-
-        return result;
-    }
+    
 
 }

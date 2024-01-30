@@ -16,6 +16,11 @@ public class Container : MonoBehaviour
 
     public LayerMask containerSlotMask;
 
+    public bool animationPlaying;
+
+    private bool empty;
+    private bool allSame;
+
     private void Start()
     {
         if(grid is not null && drinkSlots.Count == 0) drinkSlots.AddRange(grid.GetCells());
@@ -72,12 +77,10 @@ public class Container : MonoBehaviour
             drinkGroups.Add(temp);
         }
 
-        //drinkGroups.Sort((x, y) => x.Count.CompareTo(y.Count));
         drinkGroups.Sort(SortByAscendingListCount);
 
         foreach (var group in drinkGroups)
         {
-            print(group.Count);
             if(group.Count == 0) { continue; }
             typeCountMap.Add(group[0].GetDrinkType(),group.Count);
         }
@@ -104,10 +107,10 @@ public class Container : MonoBehaviour
             drinks.Add(temp);
             existingTypes.Add(temp.GetDrinkType());
         }
-        
+
 
         // Empty
-        if(drinks.Count == 0) {
+        /*if(drinks.Count == 0) {
 
 
             if (Physics.Raycast(transform.position + Vector3.up,Vector3.down,out RaycastHit hit,float.MaxValue,containerSlotMask))
@@ -117,18 +120,18 @@ public class Container : MonoBehaviour
 
 
             transform.parent = null;
-            Invoke(nameof(DisableGameObject), 0.25f);
-            /*transform.DOScale(Vector3.zero,0.25f).OnComplete(()=>
+            //Invoke(nameof(DisableGameObject), 0.25f);
+            transform.DOScale(Vector3.zero,0.25f).OnComplete(()=>
             {
                 Invoke(nameof(DisableGameObject),0.1f);
-            });*/
+            });
 
             return;
             
-        }
-        
+        }*/
+
         // All Same
-        bool allSame = true;
+        /*bool allSame = true;
         DrinkType sample = drinks[0].GetDrinkType();
         foreach (var d in drinks)
         {
@@ -149,29 +152,84 @@ public class Container : MonoBehaviour
 
             transform.parent = null;
             Invoke(nameof(DisableGameObject), 0.25f);
-            /*transform.DOScale(Vector3.zero,0.25f).OnComplete(()=>
-            {
-                Invoke(nameof(DisableGameObject),0.1f);
-            });*/
 
             return;
-        }
+        }*/
+
+        Invoke(nameof(CheckIsContainerEmpty),0.25f);
+
+        if (empty) return;
+
+        Invoke(nameof(CheckIsAllSame), 0.25f);
+
+        if (allSame) return;
 
         CategorizeDrinks();
         
     }
 
-    
+    private void CheckIsContainerEmpty()
+    {
+        if (drinks.Count == 0)
+        {
+
+            empty = true;
+
+            if (Physics.Raycast(transform.position + Vector3.up, Vector3.down, out RaycastHit hit, float.MaxValue, containerSlotMask))
+            {
+                hit.transform.GetComponent<ContainerSlot>().SetCurrentContainer(null);
+            }
+
+
+            transform.parent = null;
+            //Invoke(nameof(DisableGameObject), 0.25f);
+            DisableGameObject();
+            return;
+
+        }
+    }
+
+    private void CheckIsAllSame()
+    {
+
+        if (empty) return;
+
+        allSame = true;
+        DrinkType sample = drinks[0].GetDrinkType();
+        foreach (var d in drinks)
+        {
+            if (d.GetDrinkType() != sample)
+            {
+                allSame = false;
+                break;
+            }
+        }
+
+        if (allSame && (drinks.Count == 6) && (emptySlots.Count == 0))
+        {
+            if (Physics.Raycast(transform.position + Vector3.up, Vector3.down, out RaycastHit hit, float.MaxValue, containerSlotMask))
+            {
+                hit.transform.GetComponent<ContainerSlot>().SetCurrentContainer(null);
+            }
+
+
+            transform.parent = null;
+            //Invoke(nameof(DisableGameObject), 0.25f);
+            DisableGameObject();
+
+            return;
+        }
+    }
 
     private void DisableGameObject()
     {
-
+        if (animationPlaying) return;
         transform.DOScale(Vector3.zero, 0.25f).OnComplete(() =>
         {
             gameObject.SetActive(false);
+            //Destroy(gameObject);
         });
-        //DOTween.CompleteAll();
-        //Destroy(gameObject);
+        
     }
 
     
