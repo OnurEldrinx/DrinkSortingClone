@@ -1,7 +1,7 @@
 using UnityEngine;
 using DG.Tweening;
 
-public class Player : MonoBehaviour
+public class Player : Singleton<Player>
 {
 
     private Camera mainCamera;
@@ -17,7 +17,8 @@ public class Player : MonoBehaviour
 
     private Vector3 draggingOffset;
 
-    private Tweener movementTween;
+    public bool animationOnPlay;
+
 
     // Start is called before the first frame update
     void Start()
@@ -86,7 +87,7 @@ public class Player : MonoBehaviour
             //draggingTarget.transform.position = movementVector;
 
             
-            movementTween = draggingTarget.DOMove(movementVector,0.05f).SetEase(Ease.InSine);
+            draggingTarget.DOMove(movementVector,0.05f).SetEase(Ease.InSine);
 
             
         }

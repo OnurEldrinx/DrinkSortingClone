@@ -41,7 +41,7 @@ public class ContainerSlot : MonoBehaviour
             }
             
             List<Transform> neighbors = grid.GetNeighborsOf(cell);
-           
+            
 
             float jumpPower = 1;
             float duration = 0.25f;
@@ -59,12 +59,16 @@ public class ContainerSlot : MonoBehaviour
             }
 
 
+            List<Container> neighborContainers = new List<Container>();
+
             foreach (var neighbor in neighbors)
             {
 
                 Container n = neighbor.GetComponent<GridCell>().content.GetComponent<ContainerSlot>().currentContainer;
 
                 if (n is null) continue;
+
+                neighborContainers.Add(n);
 
                 foreach (var drink in n.GetDrinks())
                 {
@@ -78,27 +82,99 @@ public class ContainerSlot : MonoBehaviour
             }
 
 
-            List<Container> allContainers = new List<Container>(drinkContainerMap.Values);
-            List<Drink> allDrinks = new List<Drink>(drinkContainerMap.Keys);
 
 
+            //List<Drink> removeListOfCurrentContainer = new List<Drink>();
 
-            for (int i=0;i<5;i++)
+            int iterationNumber = 5;
+            delayCounter = 0;
+
+            for (int i=0;i < iterationNumber; i++)
             {
+
+
+
+                foreach (var neighborContainer in neighborContainers)
+                {
+
+                    if (neighborContainer.GetDrinks().Count == 0) continue;
+
+                    DrinkType mostExisting = neighborContainer.MostExistingType();
+                    //print(mostExisting + " - " + currentContainer.MostExistingType());
+
+                    List<Drink> wanted = currentContainer.GetDrinks(mostExisting);
+
+                    List<Drink> unwantedInNeighbor = new List<Drink>(neighborContainer.GetDrinks());
+                    unwantedInNeighbor.RemoveAll((d) => d.GetDrinkType() == mostExisting);
+
+                    foreach (var d in wanted)
+                    {
+                        if (neighborContainer.AreThereAnyEmptySlot())
+                        {
+                            d.Animate(currentContainer, neighborContainer, jumpPower, duration, ease, delayCounter);
+                            delayCounter += delay;
+                        }
+
+                    }
+
+                    foreach (var d in unwantedInNeighbor)
+                    {
+
+                        if (currentContainer.AreThereAnyEmptySlot())
+                        {
+                            d.Animate(neighborContainer, currentContainer, jumpPower, duration, ease, delayCounter);
+                            delayCounter += delay;
+                        }
+
+
+                    }
+
+                    
+
+
+                }
+            }
+
+            
+            
+
+
+
+
+
+
+
+
+
+
+            //List<Container> allContainers = new List<Container>(drinkContainerMap.Values);
+            //List<Drink> allDrinks = new List<Drink>(drinkContainerMap.Keys);
+
+            //DrinkType last;
+
+
+            /*for (int i=0;i<5;i++)
+            {
+
                 // Most Stable
                 delayCounter = 0;
                 allDrinks = new List<Drink>(drinkContainerMap.Keys);
                 allContainers = new List<Container>(drinkContainerMap.Values);
 
+
                 // each drink looks for the most
                 foreach (var drink in allDrinks)
                 {
+
+                    
 
                     Container source = drinkContainerMap[drink];
 
                     Container target = allContainers[0];
 
                     DrinkType type = drink.GetDrinkType();
+
+                    last = type;
 
                     foreach (Container c in allContainers)
                     {
@@ -126,44 +202,64 @@ public class ContainerSlot : MonoBehaviour
 
                     if (target != source && target.AreThereAnyEmptySlot() && !drink.animating)
                     {
-                        drink.Animate(source, target, jumpPower, duration, ease, delayCounter);
-                        delayCounter += delay;
-                        drinkContainerMap[drink] = target;
+
+                        
+                         drink.Animate(source, target, jumpPower, duration, ease, delayCounter);
+                         delayCounter += delay;
+                         drinkContainerMap[drink] = target;
+                        
+
+                        
                     }
-                    else if (target != source && !target.AreThereAnyEmptySlot() && source.AreThereAnyEmptySlot() && drink.GetDrinkType() == type && (target.GetDrinks(type).Count + source.GetDrinks(type).Count < 6))
+                    else if (target != source && !target.AreThereAnyEmptySlot() && source.AreThereAnyEmptySlot() && drink.GetDrinkType() == type && (targetDrinks.Count + sourceDrinks.Count <= 6))
                     {
 
                         targetDrinks = target.GetDrinks(type);
+                        sourceDrinks = source.GetDrinks(type);
+                        last = type;
                         print(targetDrinks.Count + " - " + type);
-                        foreach (var d in targetDrinks)
+
+                        if(targetDrinks.Count <= sourceDrinks.Count)
                         {
 
-                            if (source.AreThereAnyEmptySlot() && !d.animating)
+                            foreach (var d in targetDrinks)
                             {
-                                d.Animate(target, source, jumpPower, duration, ease, delayCounter);
-                                delayCounter += delay;
-                                drinkContainerMap[d] = source;
+
+                                if (source.AreThereAnyEmptySlot() && !d.animating)
+                                {
+                                    d.Animate(target, source, jumpPower, duration, ease, delayCounter);
+                                    delayCounter += delay;
+                                    drinkContainerMap[d] = source;
+
+                                }
+                                else if (currentContainer.AreThereAnyEmptySlot() && !d.animating)
+                                {
+                                    d.Animate(target, currentContainer, jumpPower, duration, ease, delayCounter);
+                                    delayCounter += delay;
+                                    drinkContainerMap[d] = currentContainer;
+
+                                }
+
 
                             }
-                            else if (currentContainer.AreThereAnyEmptySlot() && !d.animating)
-                            {
-                                d.Animate(target, currentContainer, jumpPower, duration, ease, delayCounter);
-                                delayCounter += delay;
-                                drinkContainerMap[d] = currentContainer;
-
-                            }
-
                         }
+
+                        
 
                     }
 
 
                 }
-            }
+            }*/
 
                 
 
 
+            // New algorithm
+            // 1. Find count of types for each container
+            // 2. Sort the type counts
+            // 3. Largest type will be completed first.
+            // 4. If its container is not empty it will be.
 
             
 
@@ -179,12 +275,7 @@ public class ContainerSlot : MonoBehaviour
         
     }
 
-    private void SendMinToMax()
-    {
-
-    }
-
-
+    
     public int SortByAscendingListCount(List<Drink> x, List<Drink> y)
     {
         return x.Count.CompareTo(y.Count);

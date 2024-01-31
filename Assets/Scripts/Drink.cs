@@ -27,6 +27,7 @@ public class Drink : MonoBehaviour
         }
 
         animating = true;
+        Player.Instance.animationOnPlay = true;
 
         source.animationPlaying = true;
         target.animationPlaying = true;
@@ -43,6 +44,8 @@ public class Drink : MonoBehaviour
             source.animationPlaying = false;
             target.animationPlaying = false;
             animating = false;
+            Player.Instance.animationOnPlay = false;
+
 
         });
 

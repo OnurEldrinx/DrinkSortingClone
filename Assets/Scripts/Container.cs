@@ -156,16 +156,35 @@ public class Container : MonoBehaviour
             return;
         }*/
 
-        Invoke(nameof(CheckIsContainerEmpty),0.25f);
+        float invokeTime;
+
+        if (Player.Instance.animationOnPlay)
+        {
+            invokeTime = 0.5f;
+        }
+        else
+        {
+            invokeTime = 0.25f;
+        }
+
+        Invoke(nameof(CheckEmptyOrMatchInvoker),invokeTime);
+
+        //CategorizeDrinks();
+        
+    }
+
+    private void CheckEmptyOrMatchInvoker()
+    {
+        //Invoke(nameof(CheckIsContainerEmpty), 0.25f);
+
+        CheckIsContainerEmpty();
 
         if (empty) return;
 
-        Invoke(nameof(CheckIsAllSame), 0.25f);
+        //Invoke(nameof(CheckIsAllSame), 0.25f);
 
-        if (allSame) return;
+        CheckIsAllSame();
 
-        CategorizeDrinks();
-        
     }
 
     private void CheckIsContainerEmpty()
@@ -184,7 +203,6 @@ public class Container : MonoBehaviour
             transform.parent = null;
             //Invoke(nameof(DisableGameObject), 0.25f);
             DisableGameObject();
-            return;
 
         }
     }
@@ -217,7 +235,6 @@ public class Container : MonoBehaviour
             //Invoke(nameof(DisableGameObject), 0.25f);
             DisableGameObject();
 
-            return;
         }
     }
 

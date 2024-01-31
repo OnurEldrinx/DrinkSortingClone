@@ -217,6 +217,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: 2
+  animating: 0
 --- !u!1 &22706664
 GameObject:
   m_ObjectHideFlags: 0
@@ -501,6 +502,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: 0
+  animating: 0
 --- !u!1 &78033766
 GameObject:
   m_ObjectHideFlags: 0
@@ -1254,6 +1256,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: 1
+  animating: 0
 --- !u!1 &352599605
 GameObject:
   m_ObjectHideFlags: 0
@@ -1398,6 +1401,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: 1
+  animating: 0
 --- !u!1 &430432481
 GameObject:
   m_ObjectHideFlags: 0
@@ -1675,6 +1679,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: 2
+  animating: 0
 --- !u!1 &589030010
 GameObject:
   m_ObjectHideFlags: 0
@@ -2185,6 +2190,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: 3
+  animating: 0
 --- !u!1 &685217986
 GameObject:
   m_ObjectHideFlags: 0
@@ -2909,6 +2915,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: 1
+  animating: 0
 --- !u!1 &936133978
 GameObject:
   m_ObjectHideFlags: 0
@@ -3833,6 +3840,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: 0
+  animating: 0
 --- !u!1 &1160860697
 GameObject:
   m_ObjectHideFlags: 0
@@ -3910,6 +3918,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: 2
+  animating: 0
 --- !u!1 &1293699614
 GameObject:
   m_ObjectHideFlags: 0
@@ -5343,6 +5352,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: 0
+  animating: 0
 --- !u!1 &1881562362
 GameObject:
   m_ObjectHideFlags: 0
@@ -5666,6 +5676,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: 1
+  animating: 0
 --- !u!1001 &1911637179
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6201,6 +6212,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: 3
+  animating: 0
 --- !u!1001 &2019308480
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6597,6 +6609,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: 3
+  animating: 0
 --- !u!1 &2107168595
 GameObject:
   m_ObjectHideFlags: 0
