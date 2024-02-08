@@ -181,10 +181,17 @@ public class Container : MonoBehaviour
                 hit.transform.GetComponent<ContainerSlot>().SetCurrentContainer(null);
             }
 
+            float delayCounter = 0;
+            foreach (var slot in drinkSlots)
+            {
+                slot.GetChild(0).DOPunchPosition(Vector3.up * 0.5f, 0.25f).SetDelay(delayCounter);
+                delayCounter += 0.05f;
+            }
+
 
             transform.parent = null;
-            //Invoke(nameof(DisableGameObject), 0.25f);
-            DisableGameObject();
+            Invoke(nameof(DisableGameObject), delayCounter + 0.25f);
+            //DisableGameObject();
 
         }
     }

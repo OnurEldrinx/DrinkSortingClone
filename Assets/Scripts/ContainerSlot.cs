@@ -146,7 +146,7 @@ public class ContainerSlot : MonoBehaviour
 
             int containerCounter = 0;
             
-            delayCounter = 0;
+            //delayCounter = 0;
             float d = 0.05f;
             float localDuration = 0.25f;
             float timer = 0;
@@ -202,13 +202,17 @@ public class ContainerSlot : MonoBehaviour
                         delayCounter += d;
                         timer += d;
                     }*/
-                    
+
                     drinkTransform.DOJump(targetSlot.position,1,1,localDuration).SetDelay(delayCounter).SetEase(Ease.InOutSine).OnComplete(() =>
                     {
                         drinkTransform.parent = targetSlot;
                         drinkTransform.localPosition = Vector3.zero;
                         drinkTransform.localScale = new Vector3(4,1,4);
-                        
+
+                        drinkTransform.DOPunchRotation(drinkTransform.right * 10, 0.15f).SetEase(Ease.OutElastic);
+                        //drinkTransform.GetChild(0).DOPunchRotation(drinkTransform.forward * 10, 0.15f).SetEase(Ease.OutElastic);
+                        //drinkTransform.GetChild(0).DOShakeRotation(0.1f,drinkTransform.forward * 5);
+
                     });
 
                     delayCounter += d;
