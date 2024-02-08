@@ -18,7 +18,7 @@ public class Container : MonoBehaviour
 
     public bool animationPlaying;
 
-    private bool empty;
+    public bool empty;
     private bool allSame;
 
     private void Start()
@@ -173,7 +173,7 @@ public class Container : MonoBehaviour
         
     }
 
-    private void CheckEmptyOrMatchInvoker()
+    public void CheckEmptyOrMatchInvoker()
     {
         //Invoke(nameof(CheckIsContainerEmpty), 0.25f);
 
@@ -366,6 +366,17 @@ public class Container : MonoBehaviour
     public int EmptySlotCount()
     {
         return emptySlots.Count;
+    }
+
+    public void ClearAllSlots()
+    {
+        emptySlots.Clear();
+        emptySlots = new List<Transform>(drinkSlots);
+    }
+
+    public List<Transform> GetEmptySlots()
+    {
+        return emptySlots;
     }
 
 }

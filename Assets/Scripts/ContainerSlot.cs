@@ -1,5 +1,5 @@
-
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using DG.Tweening;
 
@@ -9,6 +9,13 @@ public class ContainerSlot : MonoBehaviour
     private Container currentContainer;
     public GridInstance grid;
 
+    float jumpPower = 0.75f;
+    float duration = 0.25f;
+    Ease ease = Ease.Linear;
+    float delayCounter;
+    float delay = 0.2f;
+    
+    
     private void Start()
     {
         grid = transform.parent.parent.GetComponent<GridInstance>();
@@ -19,6 +26,8 @@ public class ContainerSlot : MonoBehaviour
         return currentContainer is null;
     }
 
+    private HashSet<Container> allContainers;
+    
     public void AcceptOrReject(Container container)
     {
         Transform t = transform;
@@ -42,20 +51,33 @@ public class ContainerSlot : MonoBehaviour
             
             List<Transform> neighbors = grid.GetNeighborsOf(cell);
             
-
-            float jumpPower = 1;
-            float duration = 0.25f;
-            Ease ease = Ease.Linear;
-            float delayCounter;
-            float delay = 0.2f;
-
-
-
+            
+            
+            
             Dictionary<Drink, Container> drinkContainerMap = new Dictionary<Drink, Container>();
 
+            var drinkGroups = new Dictionary<DrinkType,List<Drink>>();
+
+            var allTypes = new HashSet<DrinkType>();
+            
             foreach (var drink  in currentContainer.GetDrinks())
             {
+
+                DrinkType type = drink.GetDrinkType();
+
+                allTypes.Add(type);
+                
                 drinkContainerMap.Add(drink,currentContainer);
+
+                if (drinkGroups.TryGetValue(type, out var group))
+                {
+                    group.Add(drink);
+                }
+                else
+                {
+                    drinkGroups.Add(type,new List<Drink>(){drink});
+                }
+                
             }
 
 
@@ -72,199 +94,126 @@ public class ContainerSlot : MonoBehaviour
 
                 foreach (var drink in n.GetDrinks())
                 {
-                    if (!drinkContainerMap.ContainsKey(drink))
-                    {
-                        drinkContainerMap.Add(drink, n);
-                    }
-                }
-
-
-            }
-
-
-
-
-            //List<Drink> removeListOfCurrentContainer = new List<Drink>();
-
-            int iterationNumber = 5;
-            delayCounter = 0;
-
-            for (int i=0;i < iterationNumber; i++)
-            {
-
-
-
-                foreach (var neighborContainer in neighborContainers)
-                {
-
-                    if (neighborContainer.GetDrinks().Count == 0) continue;
-
-                    DrinkType mostExisting = neighborContainer.MostExistingType();
-                    //print(mostExisting + " - " + currentContainer.MostExistingType());
-
-                    List<Drink> wanted = currentContainer.GetDrinks(mostExisting);
-
-                    List<Drink> unwantedInNeighbor = new List<Drink>(neighborContainer.GetDrinks());
-                    unwantedInNeighbor.RemoveAll((d) => d.GetDrinkType() == mostExisting);
-
-                    foreach (var d in wanted)
-                    {
-                        if (neighborContainer.AreThereAnyEmptySlot())
-                        {
-                            d.Animate(currentContainer, neighborContainer, jumpPower, duration, ease, delayCounter);
-                            delayCounter += delay;
-                        }
-
-                    }
-
-                    foreach (var d in unwantedInNeighbor)
-                    {
-
-                        if (currentContainer.AreThereAnyEmptySlot())
-                        {
-                            d.Animate(neighborContainer, currentContainer, jumpPower, duration, ease, delayCounter);
-                            delayCounter += delay;
-                        }
-
-
-                    }
-
                     
-
-
-                }
-            }
-
-            
-            
-
-
-
-
-
-
-
-
-
-
-            //List<Container> allContainers = new List<Container>(drinkContainerMap.Values);
-            //List<Drink> allDrinks = new List<Drink>(drinkContainerMap.Keys);
-
-            //DrinkType last;
-
-
-            /*for (int i=0;i<5;i++)
-            {
-
-                // Most Stable
-                delayCounter = 0;
-                allDrinks = new List<Drink>(drinkContainerMap.Keys);
-                allContainers = new List<Container>(drinkContainerMap.Values);
-
-
-                // each drink looks for the most
-                foreach (var drink in allDrinks)
-                {
-
-                    
-
-                    Container source = drinkContainerMap[drink];
-
-                    Container target = allContainers[0];
-
                     DrinkType type = drink.GetDrinkType();
 
-                    last = type;
-
-                    foreach (Container c in allContainers)
+                    allTypes.Add(type);
+                    
+                    drinkContainerMap.TryAdd(drink, n);
+                    
+                    if (drinkGroups.TryGetValue(type, out var group))
                     {
+                        group.Add(drink);
+                    }
+                    else
+                    {
+                        drinkGroups.Add(type,new List<Drink>(){drink});
+                    }
+                    
+                }
 
-                        if (c.GetDrinks(type).Count > target.GetDrinks(type).Count)
+
+            }
+
+
+            if (neighborContainers.Count == 0)
+            {
+                return;
+            }
+            
+            
+
+            allContainers = new HashSet<Container>(drinkContainerMap.Values);
+            var allEmptySlots = new List<Transform>();
+
+            var slotContainerMap = new Dictionary<Transform, Container>();
+            
+            foreach (var c in allContainers)
+            {
+                c.ClearAllSlots();
+                foreach (var slot in c.GetEmptySlots())
+                {
+                    slotContainerMap.Add(slot,c);
+                    allEmptySlots.Add(slot);
+                }
+                
+            }
+
+            var allGroups = new List<List<Drink>>();
+            allGroups.AddRange(drinkGroups.Values);
+            allGroups.Sort(SortByDescendingListCount);
+
+
+            int containerCounter = 0;
+            
+            delayCounter = 0;
+            float d = 0.025f;
+            float localDuration = 0.25f;
+            
+            foreach (var group in allGroups)
+            {
+
+                Container target = allContainers.ElementAt(containerCounter);
+                containerCounter++;
+                containerCounter %= allContainers.Count;
+                
+                foreach (var drink in group)
+                {
+                    var drinkTransform = drink.transform;
+                    drinkTransform.parent = null;
+
+
+
+                    Transform targetSlot;
+
+                    if (target.AreThereAnyEmptySlot())
+                    {
+                        targetSlot = target.GetEmptySlot();
+                    }
+                    else
+                    {
+                        targetSlot = allEmptySlots.Find(s=> s.childCount == 0);
+                        target = slotContainerMap[targetSlot];
+                    }
+                    
+                    Container source = drinkContainerMap[drink];
+                    drinkContainerMap[drink] = target;
+
+                    source.GetDrinks().Remove(drink);
+                    target.GetDrinks().Add(drink);
+
+                    if (target == source)
+                    {
+                        drinkTransform.parent = targetSlot;
+                        drinkTransform.localPosition = Vector3.zero;
+                        drinkTransform.localScale = new Vector3(4,1,4);
+                    }
+                    else
+                    {
+                        drinkTransform.DOJump(targetSlot.position,1,1,localDuration).SetDelay(delayCounter).SetEase(Ease.InOutSine).OnComplete(() =>
                         {
+                            drinkTransform.parent = targetSlot;
+                            drinkTransform.localPosition = Vector3.zero;
+                            drinkTransform.localScale = new Vector3(4,1,4);
+                        
+                        });
 
-                            target = c;
-
-                        }
-                        else if (c.GetDrinks(type).Count == target.GetDrinks(type).Count)
-                        {
-
-                            if (c != target)
-                            {
-                                target = c;
-                            }
-
-                        }
+                        delayCounter += d;
 
                     }
-
-                    List<Drink> targetDrinks = target.GetDrinks(type);
-                    List<Drink> sourceDrinks = source.GetDrinks(type);
-
-                    if (target != source && target.AreThereAnyEmptySlot() && !drink.animating)
-                    {
-
-                        
-                         drink.Animate(source, target, jumpPower, duration, ease, delayCounter);
-                         delayCounter += delay;
-                         drinkContainerMap[drink] = target;
-                        
-
-                        
-                    }
-                    else if (target != source && !target.AreThereAnyEmptySlot() && source.AreThereAnyEmptySlot() && drink.GetDrinkType() == type && (targetDrinks.Count + sourceDrinks.Count <= 6))
-                    {
-
-                        targetDrinks = target.GetDrinks(type);
-                        sourceDrinks = source.GetDrinks(type);
-                        last = type;
-                        print(targetDrinks.Count + " - " + type);
-
-                        if(targetDrinks.Count <= sourceDrinks.Count)
-                        {
-
-                            foreach (var d in targetDrinks)
-                            {
-
-                                if (source.AreThereAnyEmptySlot() && !d.animating)
-                                {
-                                    d.Animate(target, source, jumpPower, duration, ease, delayCounter);
-                                    delayCounter += delay;
-                                    drinkContainerMap[d] = source;
-
-                                }
-                                else if (currentContainer.AreThereAnyEmptySlot() && !d.animating)
-                                {
-                                    d.Animate(target, currentContainer, jumpPower, duration, ease, delayCounter);
-                                    delayCounter += delay;
-                                    drinkContainerMap[d] = currentContainer;
-
-                                }
-
-
-                            }
-                        }
-
-                        
-
-                    }
-
+                    
+                    allEmptySlots.Remove(targetSlot);
 
                 }
-            }*/
-
                 
 
+            }
 
-            // New algorithm
-            // 1. Find count of types for each container
-            // 2. Sort the type counts
-            // 3. Largest type will be completed first.
-            // 4. If its container is not empty it will be.
-
-            
+            Invoke(nameof(UpdateContainers), delayCounter + localDuration);
 
 
-            
+
+
 
 
         }
@@ -275,6 +224,13 @@ public class ContainerSlot : MonoBehaviour
         
     }
 
+    private void UpdateContainers()
+    {
+        foreach (var c in allContainers)
+        {
+            c.CheckEmptyOrMatchInvoker();
+        }
+    }
     
     public int SortByAscendingListCount(List<Drink> x, List<Drink> y)
     {

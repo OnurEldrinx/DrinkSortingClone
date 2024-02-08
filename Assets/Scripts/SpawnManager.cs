@@ -15,7 +15,7 @@ public class SpawnManager : Singleton<SpawnManager>
 
     public List<Drink> GetRandomDrinks()
     {
-        int count = Random.Range(1,5);
+        int count = Random.Range(2,5);
 
         List<Drink> result = new List<Drink>();
 
