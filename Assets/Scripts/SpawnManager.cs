@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
 
 public class SpawnManager : Singleton<SpawnManager>
@@ -39,7 +40,12 @@ public class SpawnManager : Singleton<SpawnManager>
             c.Fill(GetRandomDrinks());
             c.transform.localPosition = spawnPositions[i].position;
             c.transform.localRotation = spawnPositions[i].rotation;
-            c.transform.parent = spawnPositions[i];
+            c.transform.localScale = Vector3.zero;
+            var index = i;
+            c.transform.DOScale(Vector3.one, 0.45f).SetDelay(0.05f).SetEase(Ease.OutElastic).OnComplete(() =>
+            {
+                c.transform.parent = spawnPositions[index];
+            });
             filledSlotCount++;
 
         }

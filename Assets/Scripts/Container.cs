@@ -107,54 +107,7 @@ public class Container : MonoBehaviour
             drinks.Add(temp);
             existingTypes.Add(temp.GetDrinkType());
         }
-
-
-        // Empty
-        /*if(drinks.Count == 0) {
-
-
-            if (Physics.Raycast(transform.position + Vector3.up,Vector3.down,out RaycastHit hit,float.MaxValue,containerSlotMask))
-            {
-                hit.transform.GetComponent<ContainerSlot>().SetCurrentContainer(null);
-            }
-
-
-            transform.parent = null;
-            //Invoke(nameof(DisableGameObject), 0.25f);
-            transform.DOScale(Vector3.zero,0.25f).OnComplete(()=>
-            {
-                Invoke(nameof(DisableGameObject),0.1f);
-            });
-
-            return;
-            
-        }*/
-
-        // All Same
-        /*bool allSame = true;
-        DrinkType sample = drinks[0].GetDrinkType();
-        foreach (var d in drinks)
-        {
-            if (d.GetDrinkType() != sample)
-            {
-                allSame = false;
-                break;
-            }
-        }
-
-        if (allSame && (drinks.Count == 6) && (emptySlots.Count == 0))
-        {
-            if (Physics.Raycast(transform.position + Vector3.up,Vector3.down,out RaycastHit hit,float.MaxValue,containerSlotMask))
-            {
-                hit.transform.GetComponent<ContainerSlot>().SetCurrentContainer(null);
-            }
-
-
-            transform.parent = null;
-            Invoke(nameof(DisableGameObject), 0.25f);
-
-            return;
-        }*/
+        
 
         float invokeTime;
 
@@ -168,8 +121,6 @@ public class Container : MonoBehaviour
         }
 
         Invoke(nameof(CheckEmptyOrMatchInvoker),invokeTime);
-
-        //CategorizeDrinks();
         
     }
 
@@ -243,8 +194,8 @@ public class Container : MonoBehaviour
         if (animationPlaying) return;
         transform.DOScale(Vector3.zero, 0.25f).OnComplete(() =>
         {
-            gameObject.SetActive(false);
-            //Destroy(gameObject);
+            //gameObject.SetActive(false);
+            Destroy(gameObject);
         });
         
     }
@@ -258,8 +209,6 @@ public class Container : MonoBehaviour
 
     public int GetTypeCount(DrinkType type)
     {
-        //if (!typeCountMap.ContainsKey(type)) return 0;
-        //return typeCountMap[type];
         return GetDrinks(type).Count;
     }
 

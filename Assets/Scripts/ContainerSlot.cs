@@ -147,12 +147,15 @@ public class ContainerSlot : MonoBehaviour
             int containerCounter = 0;
             
             delayCounter = 0;
-            float d = 0.025f;
+            float d = 0.05f;
             float localDuration = 0.25f;
+            float timer = 0;
             
             foreach (var group in allGroups)
             {
 
+                delayCounter = 0;
+                
                 Container target = allContainers.ElementAt(containerCounter);
                 containerCounter++;
                 containerCounter %= allContainers.Count;
@@ -161,9 +164,7 @@ public class ContainerSlot : MonoBehaviour
                 {
                     var drinkTransform = drink.transform;
                     drinkTransform.parent = null;
-
-
-
+                    
                     Transform targetSlot;
 
                     if (target.AreThereAnyEmptySlot())
@@ -172,17 +173,17 @@ public class ContainerSlot : MonoBehaviour
                     }
                     else
                     {
-                        targetSlot = allEmptySlots.Find(s=> s.childCount == 0);
+                        targetSlot = allEmptySlots[^1];
                         target = slotContainerMap[targetSlot];
                     }
-                    
+
                     Container source = drinkContainerMap[drink];
                     drinkContainerMap[drink] = target;
 
                     source.GetDrinks().Remove(drink);
                     target.GetDrinks().Add(drink);
 
-                    if (target == source)
+                    /*if (target == source)
                     {
                         drinkTransform.parent = targetSlot;
                         drinkTransform.localPosition = Vector3.zero;
@@ -199,8 +200,19 @@ public class ContainerSlot : MonoBehaviour
                         });
 
                         delayCounter += d;
+                        timer += d;
+                    }*/
+                    
+                    drinkTransform.DOJump(targetSlot.position,1,1,localDuration).SetDelay(delayCounter).SetEase(Ease.InOutSine).OnComplete(() =>
+                    {
+                        drinkTransform.parent = targetSlot;
+                        drinkTransform.localPosition = Vector3.zero;
+                        drinkTransform.localScale = new Vector3(4,1,4);
+                        
+                    });
 
-                    }
+                    delayCounter += d;
+                    timer += d;
                     
                     allEmptySlots.Remove(targetSlot);
 
@@ -209,7 +221,7 @@ public class ContainerSlot : MonoBehaviour
 
             }
 
-            Invoke(nameof(UpdateContainers), delayCounter + localDuration);
+            Invoke(nameof(UpdateContainers), timer + localDuration);
 
 
 
