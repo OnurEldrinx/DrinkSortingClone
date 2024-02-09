@@ -9,27 +9,24 @@ public class ContainerSlot : MonoBehaviour
     public Container currentContainer;
     public GridInstance grid;
 
-    float jumpPower = 0.75f;
+    /*float jumpPower = 0.75f;
     float duration = 0.25f;
     Ease ease = Ease.Linear;
     float delayCounter;
-    float delay = 0.2f;
+    float delay = 0.2f;*/
     
-    
+    private float delayCounter;
+
     private void Start()
     {
         grid = transform.parent.parent.GetComponent<GridInstance>();
-    }
-
-    public bool IsEmpty()
-    {
-        return currentContainer is null;
     }
 
     private HashSet<Container> allContainers;
     
     public void AcceptOrReject(Container container)
     {
+
         Transform t = transform;
         Transform containerTransform = container.transform;
         if (currentContainer is null)
@@ -51,21 +48,14 @@ public class ContainerSlot : MonoBehaviour
             
             List<Transform> neighbors = grid.GetNeighborsOf(cell);
             
-            
-            
-            
             Dictionary<Drink, Container> drinkContainerMap = new Dictionary<Drink, Container>();
 
             var drinkGroups = new Dictionary<DrinkType,List<Drink>>();
-
-            var allTypes = new HashSet<DrinkType>();
             
             foreach (var drink  in currentContainer.GetDrinks())
             {
 
                 DrinkType type = drink.GetDrinkType();
-
-                allTypes.Add(type);
                 
                 drinkContainerMap.Add(drink,currentContainer);
 
@@ -86,9 +76,15 @@ public class ContainerSlot : MonoBehaviour
             foreach (var neighbor in neighbors)
             {
 
-                Container n = neighbor.GetComponent<GridCell>().content.GetComponent<ContainerSlot>().currentContainer;
+                ContainerSlot neighborContainerSlot = neighbor.GetComponent<GridCell>().content.GetComponent<ContainerSlot>();
 
-                if (n is null) continue;
+                Container n = neighborContainerSlot.currentContainer;
+
+                if (n is null)
+                {
+                    print("null neighbor");
+                    continue;
+                }
 
                 neighborContainers.Add(n);
 
@@ -96,8 +92,6 @@ public class ContainerSlot : MonoBehaviour
                 {
                     
                     DrinkType type = drink.GetDrinkType();
-
-                    allTypes.Add(type);
                     
                     drinkContainerMap.TryAdd(drink, n);
                     
@@ -111,8 +105,7 @@ public class ContainerSlot : MonoBehaviour
                     }
                     
                 }
-
-
+                
             }
 
 
@@ -141,12 +134,11 @@ public class ContainerSlot : MonoBehaviour
 
             var allGroups = new List<List<Drink>>();
             allGroups.AddRange(drinkGroups.Values);
-            allGroups.Sort(SortByDescendingListCount);
+            allGroups.Sort(Helper.SortByDescendingListCount);
 
 
             int containerCounter = 0;
             
-            //delayCounter = 0;
             float d = 0.05f;
             float localDuration = 0.25f;
             float timer = 0;
@@ -211,8 +203,6 @@ public class ContainerSlot : MonoBehaviour
                         drinkTransform.localScale = new Vector3(4,1,4);
 
                         drinkTransform.DOPunchRotation(drinkTransform.right * 10, 0.15f).SetEase(Ease.OutElastic);
-                        //drinkTransform.GetChild(0).DOPunchRotation(drinkTransform.forward * 10, 0.15f).SetEase(Ease.OutElastic);
-                        //drinkTransform.GetChild(0).DOShakeRotation(0.1f,drinkTransform.forward * 5);
 
                     });
 
@@ -230,14 +220,11 @@ public class ContainerSlot : MonoBehaviour
             Invoke(nameof(UpdateContainers), timer + localDuration);
 
 
-
-
-
-
         }
         else
         {
-            containerTransform.localPosition = Vector3.zero;
+            containerTransform.DOLocalMove(Vector3.zero, 0.2f);
+            //containerTransform.localPosition = Vector3.zero;
         }
         
     }
@@ -250,30 +237,10 @@ public class ContainerSlot : MonoBehaviour
         }
     }
     
-    public int SortByAscendingListCount(List<Drink> x, List<Drink> y)
-    {
-        return x.Count.CompareTo(y.Count);
-    }
-
-    public int SortByDescendingListCount(List<Drink> x, List<Drink> y)
-    {
-        return y.Count.CompareTo(x.Count);
-    }
-    public Container GetCurrentContainer()
-    {
-        return currentContainer;
-    }
-
     public void SetCurrentContainer(Container container)
     {
         currentContainer = null;
     }
     
-    
-
-    public GridInstance GetGrid()
-    {
-        return grid;
-    }
 
 }

@@ -27,6 +27,8 @@ public class Player : Singleton<Player>
     private void Awake()
     {
         
+        DOTween.SetTweensCapacity(500,500);
+        
         if (PlayerPrefs.HasKey("resX"))
         {
             resX = PlayerPrefs.GetInt("resX");
@@ -83,7 +85,6 @@ public class Player : Singleton<Player>
         else if (Input.GetMouseButtonUp(0) && dragging)
         {
             dragging = false;
-            DOTween.Clear();
 
             if (Physics.Raycast(origin, out hit, float.MaxValue, slotLayer))
             {
@@ -95,7 +96,9 @@ public class Player : Singleton<Player>
             }
             else
             {
-                draggingTarget.localPosition = Vector3.zero;
+                //draggingTarget.localPosition = Vector3.zero;
+                draggingTarget.DOLocalMove(Vector3.zero, 0.2f);
+
             }
 
 
@@ -112,15 +115,21 @@ public class Player : Singleton<Player>
             if (draggingTarget is null ) return;
             
             Vector3 mousePos = Input.mousePosition;
-            mousePos.z = mainCamera.WorldToScreenPoint(draggingTarget.transform.position).z;
+            var position = draggingTarget.transform.position;
+            mousePos.z = mainCamera.WorldToScreenPoint(position).z;
             Vector3 draggingVector = mainCamera.ScreenToWorldPoint(mousePos);
             Vector3 movementVector = draggingVector + draggingOffset;
+            
+            
             //draggingTarget.transform.position = movementVector;
-
             
-            draggingTarget.DOMove(movementVector,0.05f).SetEase(Ease.InSine);
+            //draggingTarget.DOMove(movementVector,0.05f).SetEase(Ease.InSine);
 
-            
+            //Smoothing
+            Vector3 currentPosition = position;
+            Vector3 smoothedPosition = Vector3.Lerp(currentPosition, movementVector, 10 * Time.smoothDeltaTime);
+            position = smoothedPosition;
+            draggingTarget.transform.position = position;
         }
 
 

@@ -8,9 +8,9 @@ public class Drink : MonoBehaviour
 
     public bool animating;
     
-    public void SetType(DrinkType type)
+    public void SetType(DrinkType t)
     {
-        this.type = type;
+        this.type = t;
     }
 
     public DrinkType GetDrinkType()
@@ -28,21 +28,17 @@ public class Drink : MonoBehaviour
 
         animating = true;
         Player.Instance.animationOnPlay = true;
-
-        source.animationPlaying = true;
-        target.animationPlaying = true;
+        
 
         Transform slot = target.GetEmptySlot();
 
         transform.DOJump(slot.position,jumpPower,1,duration).SetDelay(delay).SetEase(ease).OnComplete(()=>{
-
-            transform.parent = slot;
-            transform.localPosition = Vector3.zero;
-            transform.localScale = new Vector3(4,1,4);
+            var t = transform;
+            t.parent = slot;
+            t.localPosition = Vector3.zero;
+            t.localScale = new Vector3(4,1,4);
             source.UpdateDrinksList();
             target.UpdateDrinksList();
-            source.animationPlaying = false;
-            target.animationPlaying = false;
             animating = false;
             Player.Instance.animationOnPlay = false;
 
