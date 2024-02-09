@@ -6,7 +6,7 @@ using DG.Tweening;
 public class ContainerSlot : MonoBehaviour
 {
 
-    private Container currentContainer;
+    public Container currentContainer;
     public GridInstance grid;
 
     float jumpPower = 0.75f;
@@ -42,7 +42,7 @@ public class ContainerSlot : MonoBehaviour
             containerTransform.rotation = t.rotation;
             container.DisableCollider();
             currentContainer = container;
-
+            
             SpawnManager.Instance.filledSlotCount--;
             if(SpawnManager.Instance.filledSlotCount == 0)
             {
@@ -176,7 +176,8 @@ public class ContainerSlot : MonoBehaviour
                         targetSlot = allEmptySlots[^1];
                         target = slotContainerMap[targetSlot];
                     }
-
+                    
+                    
                     Container source = drinkContainerMap[drink];
                     drinkContainerMap[drink] = target;
 
@@ -219,6 +220,7 @@ public class ContainerSlot : MonoBehaviour
                     timer += d;
                     
                     allEmptySlots.Remove(targetSlot);
+
 
                 }
                 

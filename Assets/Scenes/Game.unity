@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18028396, g: 0.22571427, b: 0.30692327, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -249,6 +249,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a74fb6f5a358c4114b80e677c73194e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentContainer: {fileID: 0}
   grid: {fileID: 0}
 --- !u!65 &31815378
 BoxCollider:
@@ -504,7 +505,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 8
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &186488189
 GameObject:
@@ -698,60 +699,6 @@ MonoBehaviour:
   row: 1
   column: 2
   content: {fileID: 1587233197}
---- !u!1 &274638332
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 274638333}
-  - component: {fileID: 274638334}
-  m_Layer: 0
-  m_Name: GridManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &274638333
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 274638332}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 1
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &274638334
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 274638332}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 565cf79415f6c46399256bcf225ea472, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  row: 6
-  column: 4
-  cellWidth: 1.01
-  cellHeight: 1.01
-  cellContentPrefab: {fileID: 8845554418531728616, guid: 0cd20f8cd81631c408bf8c8bc95c193d,
-    type: 3}
-  cellContentScaleFactor: 1
-  gridInstancePrefab: {fileID: 8548232191463471363, guid: d721a3e4286014f91baadf9c48ba158b,
-    type: 3}
-  useCellContentGraphic: 1
 --- !u!1 &285508609
 GameObject:
   m_ObjectHideFlags: 0
@@ -824,7 +771,7 @@ Light:
   m_Lightmapping: 4
   m_LightShadowCasterMode: 0
   m_AreaSize: {x: 1, y: 1}
-  m_BounceIntensity: 1
+  m_BounceIntensity: 0
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
   m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
@@ -839,14 +786,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 285508609}
-  m_LocalRotation: {x: 0.42261827, y: 0, z: 0, w: 0.9063079}
-  m_LocalPosition: {x: 0, y: 10.53, z: 6.08}
+  m_LocalRotation: {x: 0.40821788, y: -0.23456968, z: 0.10938163, w: 0.8754261}
+  m_LocalPosition: {x: 0, y: 10, z: 10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 50, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
 --- !u!114 &285508612
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -903,6 +850,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   animationOnPlay: 0
+  downgradeResolution: 1
 --- !u!4 &352599607
 Transform:
   m_ObjectHideFlags: 0
@@ -916,7 +864,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &368166707
 GameObject:
@@ -1064,7 +1012,7 @@ Transform:
   - {fileID: 22706665}
   - {fileID: 1160860698}
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 30, y: 0, z: 0}
 --- !u!1 &526263567
 GameObject:
@@ -1161,6 +1109,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a74fb6f5a358c4114b80e677c73194e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentContainer: {fileID: 0}
   grid: {fileID: 0}
 --- !u!65 &595879231
 BoxCollider:
@@ -1272,6 +1221,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a74fb6f5a358c4114b80e677c73194e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentContainer: {fileID: 0}
   grid: {fileID: 0}
 --- !u!65 &606336722
 BoxCollider:
@@ -1431,6 +1381,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a74fb6f5a358c4114b80e677c73194e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentContainer: {fileID: 0}
   grid: {fileID: 0}
 --- !u!65 &617452488
 BoxCollider:
@@ -1605,6 +1556,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a74fb6f5a358c4114b80e677c73194e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentContainer: {fileID: 0}
   grid: {fileID: 0}
 --- !u!65 &719296816
 BoxCollider:
@@ -1860,6 +1812,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a74fb6f5a358c4114b80e677c73194e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentContainer: {fileID: 0}
   grid: {fileID: 0}
 --- !u!65 &926870443
 BoxCollider:
@@ -2019,6 +1972,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a74fb6f5a358c4114b80e677c73194e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentContainer: {fileID: 0}
   grid: {fileID: 0}
 --- !u!65 &952127189
 BoxCollider:
@@ -2130,6 +2084,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a74fb6f5a358c4114b80e677c73194e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentContainer: {fileID: 0}
   grid: {fileID: 0}
 --- !u!65 &966668662
 BoxCollider:
@@ -2337,6 +2292,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a74fb6f5a358c4114b80e677c73194e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentContainer: {fileID: 0}
   grid: {fileID: 0}
 --- !u!65 &1019111993
 BoxCollider:
@@ -2544,6 +2500,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a74fb6f5a358c4114b80e677c73194e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentContainer: {fileID: 0}
   grid: {fileID: 0}
 --- !u!65 &1034553143
 BoxCollider:
@@ -2655,6 +2612,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a74fb6f5a358c4114b80e677c73194e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentContainer: {fileID: 0}
   grid: {fileID: 0}
 --- !u!65 &1063078499
 BoxCollider:
@@ -2813,7 +2771,7 @@ RectTransform:
   m_Children:
   - {fileID: 1920589670}
   m_Father: {fileID: 0}
-  m_RootOrder: 9
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -2929,7 +2887,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1357124684
 MonoBehaviour:
@@ -3098,6 +3056,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a74fb6f5a358c4114b80e677c73194e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentContainer: {fileID: 0}
   grid: {fileID: 0}
 --- !u!65 &1569010335
 BoxCollider:
@@ -3209,6 +3168,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a74fb6f5a358c4114b80e677c73194e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentContainer: {fileID: 0}
   grid: {fileID: 0}
 --- !u!65 &1574790085
 BoxCollider:
@@ -3320,6 +3280,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a74fb6f5a358c4114b80e677c73194e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentContainer: {fileID: 0}
   grid: {fileID: 0}
 --- !u!65 &1587233200
 BoxCollider:
@@ -3431,6 +3392,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a74fb6f5a358c4114b80e677c73194e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentContainer: {fileID: 0}
   grid: {fileID: 0}
 --- !u!65 &1647323745
 BoxCollider:
@@ -3542,6 +3504,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a74fb6f5a358c4114b80e677c73194e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentContainer: {fileID: 0}
   grid: {fileID: 0}
 --- !u!65 &1672959845
 BoxCollider:
@@ -3653,6 +3616,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a74fb6f5a358c4114b80e677c73194e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentContainer: {fileID: 0}
   grid: {fileID: 0}
 --- !u!65 &1710477906
 BoxCollider:
@@ -3764,6 +3728,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a74fb6f5a358c4114b80e677c73194e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentContainer: {fileID: 0}
   grid: {fileID: 0}
 --- !u!65 &1736297407
 BoxCollider:
@@ -3894,55 +3859,8 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 10
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1821828323
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1821828324}
-  - component: {fileID: 1821828325}
-  m_Layer: 0
-  m_Name: DrinkGenerator
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1821828324
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1821828323}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 4
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1821828325
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1821828323}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 800651cef1a69459696ed44e7395c992, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  type: 3
-  model: {fileID: 0}
-  modelPlacementOffsetY: 0
 --- !u!1 &1881562362
 GameObject:
   m_ObjectHideFlags: 0
@@ -4068,14 +3986,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1889215899}
-  m_LocalRotation: {x: 0.5, y: 0, z: 0, w: 0.8660254}
-  m_LocalPosition: {x: 0, y: 13, z: -4.5}
+  m_LocalRotation: {x: 0.46174863, y: 0, z: 0, w: 0.8870109}
+  m_LocalPosition: {x: 0, y: 12, z: -5.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 60, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 55, y: 0, z: 0}
 --- !u!114 &1889215903
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4156,6 +4074,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a74fb6f5a358c4114b80e677c73194e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentContainer: {fileID: 0}
   grid: {fileID: 0}
 --- !u!65 &1890569841
 BoxCollider:
@@ -4267,6 +4186,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a74fb6f5a358c4114b80e677c73194e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentContainer: {fileID: 0}
   grid: {fileID: 0}
 --- !u!65 &1914704506
 BoxCollider:
@@ -4378,6 +4298,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a74fb6f5a358c4114b80e677c73194e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentContainer: {fileID: 0}
   grid: {fileID: 0}
 --- !u!65 &1919411425
 BoxCollider:
@@ -4565,6 +4486,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a74fb6f5a358c4114b80e677c73194e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentContainer: {fileID: 0}
   grid: {fileID: 0}
 --- !u!65 &1936926180
 BoxCollider:
@@ -4724,6 +4646,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a74fb6f5a358c4114b80e677c73194e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentContainer: {fileID: 0}
   grid: {fileID: 0}
 --- !u!65 &2027096222
 BoxCollider:
@@ -4931,6 +4854,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a74fb6f5a358c4114b80e677c73194e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentContainer: {fileID: 0}
   grid: {fileID: 0}
 --- !u!65 &2119795412
 BoxCollider:
@@ -5005,7 +4929,7 @@ PrefabInstance:
     - target: {fileID: 3162944535704979166, guid: 13f91bfda90fe3744b34538b21ecb2eb,
         type: 3}
       propertyPath: m_RootOrder
-      value: 6
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 3162944535704979166, guid: 13f91bfda90fe3744b34538b21ecb2eb,
         type: 3}
@@ -5065,6 +4989,11 @@ PrefabInstance:
     - target: {fileID: 3423665111275235256, guid: 13f91bfda90fe3744b34538b21ecb2eb,
         type: 3}
       propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7548314783270926296, guid: 13f91bfda90fe3744b34538b21ecb2eb,
+        type: 3}
+      propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []

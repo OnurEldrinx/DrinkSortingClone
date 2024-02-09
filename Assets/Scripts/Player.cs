@@ -19,6 +19,37 @@ public class Player : Singleton<Player>
 
     public bool animationOnPlay;
 
+    public bool downgradeResolution;
+
+    private int resX;
+    private int resY;
+    
+    private void Awake()
+    {
+        
+        if (PlayerPrefs.HasKey("resX"))
+        {
+            resX = PlayerPrefs.GetInt("resX");
+            resY = PlayerPrefs.GetInt("resY");
+        }
+        else
+        {
+            PlayerPrefs.SetInt("resX", Screen.currentResolution.width);
+            PlayerPrefs.SetInt("resY", Screen.currentResolution.height);
+            PlayerPrefs.SetInt("hZ", Screen.currentResolution.refreshRate);
+            resX = PlayerPrefs.GetInt("resX");
+            resY = PlayerPrefs.GetInt("resY");
+
+        }
+
+        if (downgradeResolution)
+        {
+            Screen.SetResolution((int)(resX * 0.75f),(int)(resY * 0.75f), FullScreenMode.FullScreenWindow);
+        }
+        QualitySettings.vSyncCount = 1;
+        Application.targetFrameRate = 60;
+        
+    }
 
     // Start is called before the first frame update
     void Start()
