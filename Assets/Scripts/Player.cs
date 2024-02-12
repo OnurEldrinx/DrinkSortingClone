@@ -1,5 +1,6 @@
 using UnityEngine;
 using DG.Tweening;
+using System.Collections.Generic;
 
 public class Player : Singleton<Player>
 {
@@ -23,7 +24,13 @@ public class Player : Singleton<Player>
 
     private int resX;
     private int resY;
-    
+
+
+    private List<Container> containersOnGrid;
+
+    private Dictionary<ContainerSlot, Container> containerSlotMap;
+
+
     private void Awake()
     {
         
@@ -56,7 +63,11 @@ public class Player : Singleton<Player>
     // Start is called before the first frame update
     void Start()
     {
-        mainCamera = Camera.main;   
+        mainCamera = Camera.main;
+
+        containersOnGrid = new List<Container>();
+
+        containerSlotMap = new Dictionary<ContainerSlot, Container>();
     }
 
     // Update is called once per frame
@@ -123,8 +134,6 @@ public class Player : Singleton<Player>
             
             //draggingTarget.transform.position = movementVector;
             
-            //draggingTarget.DOMove(movementVector,0.05f).SetEase(Ease.InSine);
-
             //Smoothing
             Vector3 currentPosition = position;
             Vector3 smoothedPosition = Vector3.Lerp(currentPosition, movementVector, 10 * Time.smoothDeltaTime);
@@ -135,5 +144,15 @@ public class Player : Singleton<Player>
 
     }
 
+
+    public List<Container> GetContainers()
+    {
+        return containersOnGrid;
+    }
+
+    public Dictionary<ContainerSlot,Container> GetContainerSlotMap()
+    {
+        return containerSlotMap;
+    }
     
 }

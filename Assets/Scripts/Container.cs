@@ -15,7 +15,9 @@ public class Container : MonoBehaviour
     public LayerMask containerSlotMask;
     
     public bool empty;
-    private bool allSame;
+    public bool allSame;
+
+    public bool done;
     
     private void Start()
     {
@@ -92,14 +94,22 @@ public class Container : MonoBehaviour
             
             drinks.Clear();
 
+            ContainerSlot slot=null;
+
             if (Physics.Raycast(transform.position + Vector3.up, Vector3.down, out RaycastHit hit, float.MaxValue, containerSlotMask))
             {
-                hit.transform.GetComponent<ContainerSlot>().SetCurrentContainer(null);
+                slot = hit.transform.GetComponent<ContainerSlot>();
+                slot.SetCurrentContainer(null);
             }
 
 
             transform.parent = null;
             //Invoke(nameof(DisableGameObject), 0.25f);
+            Player.Instance.GetContainers().Remove(this);
+            if (slot is not null)
+            {
+                Player.Instance.GetContainerSlotMap().Remove(slot);
+            }
             DisableGameObject();
 
         }
@@ -121,15 +131,21 @@ public class Container : MonoBehaviour
             }
         }
 
+     
+
         if (allSame && (drinks.Count == 6) && (emptySlots.Count == 0))
         {
             drinks.Clear();
-            
+
+            ContainerSlot containerSlot = null;
+
             if (Physics.Raycast(transform.position + Vector3.up, Vector3.down, out RaycastHit hit, float.MaxValue, containerSlotMask))
             {
-                hit.transform.GetComponent<ContainerSlot>().SetCurrentContainer(null);
+                containerSlot = hit.transform.GetComponent<ContainerSlot>();
+                containerSlot.SetCurrentContainer(null);
             }
 
+            done = true;
             float delayCounter = 0;
             foreach (var slot in drinkSlots)
             {
@@ -139,14 +155,22 @@ public class Container : MonoBehaviour
 
 
             transform.parent = null;
+            Player.Instance.GetContainers().Remove(this);
+            if (containerSlot is not null)
+            {
+                Player.Instance.GetContainerSlotMap().Remove(containerSlot);
+            }
+
             Invoke(nameof(DisableGameObject), delayCounter + 0.25f);
             //DisableGameObject();
 
         }
+        
     }
 
     private void DisableGameObject()
     {
+        done = true;
         //if (animationPlaying) return;
         transform.DOScale(Vector3.zero, 0.25f).OnComplete(() =>
         {
@@ -166,7 +190,7 @@ public class Container : MonoBehaviour
         return drinks;
     }
 
-    private List<Drink> GetDrinks(DrinkType type)
+    public List<Drink> GetDrinks(DrinkType type)
     {
         var result = new List<Drink>(drinks.FindAll(s=>s.GetDrinkType() == type));
         return result;

@@ -39,6 +39,9 @@ public class ContainerSlot : MonoBehaviour
             containerTransform.rotation = t.rotation;
             container.DisableCollider();
             currentContainer = container;
+
+            Player.Instance.GetContainers().Add(container);
+            Player.Instance.GetContainerSlotMap().TryAdd(this,container);
             
             SpawnManager.Instance.filledSlotCount--;
             if(SpawnManager.Instance.filledSlotCount == 0)
@@ -82,7 +85,6 @@ public class ContainerSlot : MonoBehaviour
 
                 if (n is null)
                 {
-                    print("null neighbor");
                     continue;
                 }
 
@@ -154,6 +156,14 @@ public class ContainerSlot : MonoBehaviour
                 
                 foreach (var drink in group)
                 {
+                    Container source = drinkContainerMap[drink];
+
+                    if (source.done) {
+                        containerCounter--;
+                        break;
+                    }
+
+
                     var drinkTransform = drink.transform;
                     drinkTransform.parent = null;
                     
@@ -170,31 +180,12 @@ public class ContainerSlot : MonoBehaviour
                     }
                     
                     
-                    Container source = drinkContainerMap[drink];
                     drinkContainerMap[drink] = target;
 
                     source.GetDrinks().Remove(drink);
                     target.GetDrinks().Add(drink);
 
-                    /*if (target == source)
-                    {
-                        drinkTransform.parent = targetSlot;
-                        drinkTransform.localPosition = Vector3.zero;
-                        drinkTransform.localScale = new Vector3(4,1,4);
-                    }
-                    else
-                    {
-                        drinkTransform.DOJump(targetSlot.position,1,1,localDuration).SetDelay(delayCounter).SetEase(Ease.InOutSine).OnComplete(() =>
-                        {
-                            drinkTransform.parent = targetSlot;
-                            drinkTransform.localPosition = Vector3.zero;
-                            drinkTransform.localScale = new Vector3(4,1,4);
-                        
-                        });
 
-                        delayCounter += d;
-                        timer += d;
-                    }*/
 
                     drinkTransform.DOJump(targetSlot.position,1,1,localDuration).SetDelay(delayCounter).SetEase(Ease.InOutSine).OnComplete(() =>
                     {
@@ -217,7 +208,7 @@ public class ContainerSlot : MonoBehaviour
 
             }
 
-            Invoke(nameof(UpdateContainers), timer + localDuration);
+            Invoke(nameof(UpdateGrid), timer + localDuration);
 
 
         }
@@ -229,9 +220,100 @@ public class ContainerSlot : MonoBehaviour
         
     }
 
+    private void UpdateGrid()
+    {
+
+        var containerSlots = Player.Instance.GetContainerSlotMap();
+
+        delayCounter = 0;
+        float d = 0.05f;
+
+        var doneTypes = new HashSet<DrinkType>();
+
+        foreach (var c in containerSlots.Keys)
+        {
+
+
+            if (c is null) { continue; }
+
+            Container current = containerSlots[c];
+
+            var neighbors = grid.GetNeighborsOf(c.transform.parent);
+
+            List<Container> neighborContainers = new List<Container>();
+
+            foreach (var neighbor in neighbors)
+            {
+
+                ContainerSlot neighborContainerSlot = neighbor.GetComponent<GridCell>().content.GetComponent<ContainerSlot>();
+
+                Container n = neighborContainerSlot.currentContainer;
+
+                if (n is null)
+                {
+                    continue;
+                }
+
+                neighborContainers.Add(n);
+
+            }
+
+            var currentDrinks = new List<Drink>(current.GetDrinks());
+
+            foreach (var drink in currentDrinks)
+            {
+
+                DrinkType drinkType = drink.GetDrinkType();
+
+                Transform drinkTransform = drink.transform;
+
+                foreach (var container in neighborContainers)
+                {
+
+                    int typeCount = container.GetDrinks(drinkType).Count;
+
+                    if (typeCount > 0 && typeCount != 6 && typeCount >= current.GetDrinks(drinkType).Count)
+                    {
+
+                        if (container.AreThereAnyEmptySlot())
+                        {
+                            Transform targetSlot = container.GetEmptySlot();
+
+                            container.GetDrinks().Add(drink);
+                            current.GetDrinks().Remove(drink);
+
+                            drinkTransform.DOJump(targetSlot.position, 1, 1, 0.25f).SetDelay(delayCounter).SetEase(Ease.InOutSine).OnComplete(() =>
+                            {
+                                drinkTransform.parent = targetSlot;
+                                drinkTransform.localPosition = Vector3.zero;
+                                drinkTransform.localScale = new Vector3(4, 1, 4);
+                                drinkTransform.DOPunchRotation(drinkTransform.right * 10, 0.15f).SetEase(Ease.OutElastic);
+
+                            });
+                            delayCounter += d;
+                            doneTypes.Add(drinkType);
+                            break;
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+        }
+
+        Invoke(nameof(UpdateContainers),delayCounter + 0.25f);
+
+    }
+
     private void UpdateContainers()
     {
-        foreach (var c in allContainers)
+        print("Update Containers");
+        var all = new List<Container>(Player.Instance.GetContainers());
+
+        foreach (var c in all)
         {
             c.CheckEmptyOrMatchInvoker();
         }
